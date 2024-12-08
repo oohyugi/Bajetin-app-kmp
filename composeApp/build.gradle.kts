@@ -18,7 +18,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -29,12 +29,12 @@ kotlin {
             isStatic = false
         }
     }
-    
+
     jvm("desktop")
-    
+
     sourceSets {
         val desktopMain by getting
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -117,7 +117,7 @@ compose.desktop {
 
 sqldelight {
     databases {
-        create("BajetinDatabase"){
+        create("BajetinDatabase") {
             packageName.set("com.bajetin.app.db")
         }
     }
