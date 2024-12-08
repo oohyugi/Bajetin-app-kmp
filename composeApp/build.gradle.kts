@@ -39,7 +39,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.android.driver)
-
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -63,7 +62,6 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.sqldelight.sql.driver)
-
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
@@ -113,7 +111,6 @@ compose.desktop {
         }
     }
 }
-
 
 sqldelight {
     databases {

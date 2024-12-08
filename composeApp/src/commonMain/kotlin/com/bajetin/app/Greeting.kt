@@ -1,9 +1,9 @@
 package com.bajetin.app
 
-class Greeting {
+const val Test = "Test"
 
-    fun greet():String {
-        val magic = 700
-        return "Hello, $magic"
+class Greeting {
+    fun greet(): String {
+        return Test
     }
 }

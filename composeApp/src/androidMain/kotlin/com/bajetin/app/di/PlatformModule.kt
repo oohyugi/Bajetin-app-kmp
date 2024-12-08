@@ -9,9 +9,8 @@ actual val platformModule = module {
     single<SqlDriver> {
         AndroidSqliteDriver(
             schema = BajetinDatabase.Schema,
-            context =  get(),
+            context = get(),
             name = "bajetin.db"
         )
     }
-
 }

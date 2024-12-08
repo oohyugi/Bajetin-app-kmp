@@ -10,7 +10,7 @@ plugins {
 
 val detekt by configurations.creating
 
-dependencies{
+dependencies {
     detekt(libs.detekt.cli)
     detekt(libs.detektFormatting)
 }
