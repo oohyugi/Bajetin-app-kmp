@@ -26,7 +26,7 @@ fun App() {
         application = {
             appModule()
         }
-    ){
+    ) {
         MaterialTheme {
             var showContent by remember { mutableStateOf(false) }
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -35,7 +35,10 @@ fun App() {
                 }
                 AnimatedVisibility(showContent) {
                     val greeting = remember { Greeting().greet() }
-                    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Image(painterResource(Res.drawable.compose_multiplatform), null)
                         Text("Compose: $greeting")
                     }
