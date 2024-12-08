@@ -1,5 +1,3 @@
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
-
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
@@ -10,14 +8,13 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
 }
 
-val detekt by configurations.creating
-
-
 dependencies{
     detekt(libs.detekt.cli)
     detekt(libs.detektFormatting)
 }
 
+
+val detekt by configurations.creating
 
 val detektTask = tasks.register<JavaExec>("detekt") {
     mainClass.set("io.gitlab.arturbosch.detekt.cli.Main")
