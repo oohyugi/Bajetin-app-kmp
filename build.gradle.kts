@@ -8,13 +8,12 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
 }
 
+val detekt by configurations.creating
+
 dependencies{
     detekt(libs.detekt.cli)
     detekt(libs.detektFormatting)
 }
-
-
-val detekt by configurations.creating
 
 val detektTask = tasks.register<JavaExec>("detekt") {
     mainClass.set("io.gitlab.arturbosch.detekt.cli.Main")
