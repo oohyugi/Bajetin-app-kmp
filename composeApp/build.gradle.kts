@@ -26,7 +26,7 @@ kotlin {
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
-            isStatic = true
+            isStatic = false
         }
     }
     
@@ -65,9 +65,8 @@ kotlin {
             implementation(libs.sqldelight.sql.driver)
 
         }
-        nativeMain.dependencies {
+        iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
-
         }
     }
 }
