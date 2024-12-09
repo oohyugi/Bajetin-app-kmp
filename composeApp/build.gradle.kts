@@ -115,9 +115,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.lifecycle.common.jvm)
-    implementation(libs.androidx.lifecycle.runtime.testing)
-    implementation(libs.androidx.lifecycle.runtime.testing.desktop)
     debugImplementation(compose.uiTooling)
 }
 

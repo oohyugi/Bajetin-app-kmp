@@ -7,8 +7,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.testing.TestLifecycleOwner
 import com.bajetin.app.core.viewmodel.TransactionViewModel
@@ -37,18 +35,4 @@ class AddTransactionSheetKtTest {
         rule.onNodeWithText("Rp.").assertIsDisplayed()
         rule.onAllNodes(hasText("0")).onFirst().assertIsDisplayed()
     }
-
-
-}
-
-
-class FakeLifecycleOwner : LifecycleOwner {
-    private val lifecycleRegistry = LifecycleRegistry(this)
-
-    init {
-        lifecycleRegistry.currentState = Lifecycle.State.RESUMED
-    }
-
-    override val lifecycle: Lifecycle = lifecycleRegistry
-
 }

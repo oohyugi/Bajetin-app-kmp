@@ -1,8 +1,8 @@
 [versions]
 agp = "8.5.2"
-android-compileSdk = "34"
+android-compileSdk = "35"
 android-minSdk = "24"
-android-targetSdk = "34"
+android-targetSdk = "35"
 androidx-activityCompose = "1.9.3"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.2.0"
@@ -23,7 +23,6 @@ datetime = "0.6.0"
 kotlinx-serialization = "1.7.3"
 navigation-compose = "2.8.0-alpha10"
 lifecycleCommonJvm = "2.8.7"
-lifecycleRuntimeTesting = "2.8.7"
 lifecycleRuntimeTestingDesktop = "2.9.0-alpha07"
 turbine = "0.13.0"
 
@@ -59,7 +58,6 @@ koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmo
 detekt-cli = { group = "io.gitlab.arturbosch.detekt", name = "detekt-cli", version.ref = "detekt" }
 detektFormatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 androidx-lifecycle-common-jvm = { group = "androidx.lifecycle", name = "lifecycle-common-jvm", version.ref = "lifecycleCommonJvm" }
-androidx-lifecycle-runtime-testing = { group = "androidx.lifecycle", name = "lifecycle-runtime-testing", version.ref = "lifecycleRuntimeTesting" }
 androidx-lifecycle-runtime-testing-desktop = { group = "androidx.lifecycle", name = "lifecycle-runtime-testing-desktop", version.ref = "lifecycleRuntimeTestingDesktop" }
 
 turbine = {module="app.cash.turbine:turbine", version.ref = "turbine"}
