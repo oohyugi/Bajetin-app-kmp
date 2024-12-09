@@ -34,6 +34,7 @@ kotlin {
 
     sourceSets {
         val desktopMain by getting
+        val desktopTest by getting
 
         androidMain.dependencies {
             implementation(compose.preview)
@@ -65,6 +66,20 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
+        }
+
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+
+        }
+
+        desktopTest.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(compose.desktop.uiTestJUnit4)
+
         }
     }
 }

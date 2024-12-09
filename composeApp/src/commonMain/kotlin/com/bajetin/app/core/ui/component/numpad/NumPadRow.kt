@@ -1,0 +1,162 @@
+package com.bajetin.app.core.ui.component.numpad
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.bajetin.app.core.ui.theme.BajetinTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+private val numpadsState = listOf(
+    listOf(
+        NumpadState("⌫", type = NumpadType.Clear),
+        NumpadState("7", type = NumpadType.Number),
+        NumpadState("4", type = NumpadType.Number),
+        NumpadState("1", type = NumpadType.Number),
+        NumpadState("0", type = NumpadType.Number)
+    ),
+    listOf(
+        NumpadState("×", type = NumpadType.Multiplication),
+        NumpadState("8", type = NumpadType.Number),
+        NumpadState("5", type = NumpadType.Number),
+        NumpadState("2", type = NumpadType.Number),
+        NumpadState("000", type = NumpadType.Number)
+    ),
+    listOf(
+        NumpadState("÷", type = NumpadType.Division),
+        NumpadState("9", type = NumpadType.Number),
+        NumpadState("6", type = NumpadType.Number),
+        NumpadState("3", type = NumpadType.Number)
+    ),
+    listOf(
+        NumpadState("-", type = NumpadType.Subtraction),
+        NumpadState("+", type = NumpadType.Addition)
+    )
+)
+
+@Composable
+fun NumpadRow(
+    onKeyPress: (NumpadState) -> Unit,
+    onClickDone: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        numpadsState.dropLast(1).forEach { row ->
+            NumpadColumn(
+                rowStates = row,
+                onKeyPress = onKeyPress,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        LastColumn(
+            rowStates = numpadsState.last(),
+            onKeyPress = onKeyPress,
+            onClickDone = onClickDone,
+            modifier = Modifier.weight(1f)
+        )
+
+    }
+}
+
+@Composable
+fun NumpadColumn(
+    rowStates: List<NumpadState>,
+    onKeyPress: (NumpadState) -> Unit,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        rowStates.forEach { state ->
+            NumPad(
+                state = state,
+                onKeyPress = onKeyPress,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun LastColumn(
+    rowStates: List<NumpadState>,
+    onKeyPress: (NumpadState) -> Unit,
+    onClickDone: () -> Unit,
+    modifier: Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        rowStates.forEach { state ->
+            NumPad(
+                state = state,
+                onKeyPress = onKeyPress,
+                modifier = Modifier.fillMaxWidth().padding(4.dp)
+            )
+
+        }
+        DoneButton(onClickDone, modifier = Modifier.fillMaxWidth())
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterialApi::class)
+private fun DoneButton(onClickDone: () -> Unit, modifier: Modifier = Modifier) {
+    Card(
+        onClick = onClickDone,
+        modifier = modifier.height(180.dp).padding(4.dp), // 180 base on numpad height * 3
+        backgroundColor = BajetinTheme.colors.primary,
+        shape = RoundedCornerShape(14.dp)
+    ) {
+        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+            Icon(
+                Icons.Default.Done,
+                "done",
+                tint = BajetinTheme.colors.backgroundDefault,
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun NumpadRowPreview() {
+    MaterialTheme {
+        Scaffold(backgroundColor = BajetinTheme.colors.backgroundDefault) {
+            NumpadRow(
+                onKeyPress = {},
+                onClickDone = {},
+                modifier = Modifier.fillMaxSize().wrapContentHeight().padding(16.dp)
+            )
+        }
+    }
+}
