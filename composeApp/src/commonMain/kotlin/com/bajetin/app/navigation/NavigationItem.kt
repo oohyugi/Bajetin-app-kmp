@@ -1,18 +1,20 @@
 package com.bajetin.app.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.ui.graphics.vector.ImageVector
+import bajetin.composeapp.generated.resources.Res
+import bajetin.composeapp.generated.resources.ic_add
+import bajetin.composeapp.generated.resources.ic_graph
+import bajetin.composeapp.generated.resources.ic_transaction
+import org.jetbrains.compose.resources.DrawableResource
 
 sealed class NavigationItem(
     val route: String,
     val title: String,
-    val icon: ImageVector? = null
+    val icon: DrawableResource? = null
 ) {
 
     data object Transaction :
-        NavigationItem(route = "/transaction", "Transaction", Icons.Rounded.PlayArrow)
+        NavigationItem(route = "/transaction", "Transaction", Res.drawable.ic_transaction)
 
-    data object Report : NavigationItem(route = "/report", "Report", Icons.Rounded.Call)
+    data object Add : NavigationItem(route = "", "", Res.drawable.ic_add)
+    data object Report : NavigationItem(route = "/report", "Report", Res.drawable.ic_graph)
 }

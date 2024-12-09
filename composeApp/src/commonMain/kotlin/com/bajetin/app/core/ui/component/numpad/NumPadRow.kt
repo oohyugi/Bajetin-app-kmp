@@ -133,7 +133,7 @@ fun LastColumn(
 private fun DoneButton(onClickDone: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         onClick = onClickDone,
-        modifier = modifier.height(180.dp).padding(4.dp), // 180 base on numpad height * 3
+        modifier = modifier.height(((60 * 3) + 24).dp).padding(4.dp), // 60 is numpad height
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
     ) {

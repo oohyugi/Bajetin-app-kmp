@@ -22,10 +22,6 @@ fun TransactionScreen() {
             )
         }
     ) {
-        NumpadRow(
-            onKeyPress = {},
-            onClickDone = {},
-            modifier = Modifier.fillMaxSize().wrapContentHeight().padding(16.dp)
-        )
+
     }
 }
