@@ -11,18 +11,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.bajetin.app.core.ui.theme.BajetinTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 private val numpadsState = listOf(
@@ -129,19 +130,18 @@ fun LastColumn(
 }
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class)
 private fun DoneButton(onClickDone: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         onClick = onClickDone,
         modifier = modifier.height(180.dp).padding(4.dp), // 180 base on numpad height * 3
-        backgroundColor = BajetinTheme.colors.primary,
-        shape = RoundedCornerShape(14.dp)
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
     ) {
-        Box(modifier = Modifier.size(24.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Icon(
                 Icons.Default.Done,
                 "done",
-                tint = BajetinTheme.colors.backgroundDefault,
+                tint = MaterialTheme.colorScheme.onPrimary,
             )
         }
     }
@@ -151,7 +151,7 @@ private fun DoneButton(onClickDone: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 private fun NumpadRowPreview() {
     MaterialTheme {
-        Scaffold(backgroundColor = BajetinTheme.colors.backgroundDefault) {
+        Scaffold {
             NumpadRow(
                 onKeyPress = {},
                 onClickDone = {},
