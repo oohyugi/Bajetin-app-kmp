@@ -19,35 +19,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-private val numpadsState = listOf(
-    listOf(
-        NumpadState("⌫", type = NumpadType.Clear),
-        NumpadState("7", type = NumpadType.Number),
-        NumpadState("4", type = NumpadType.Number),
-        NumpadState("1", type = NumpadType.Number),
-        NumpadState("0", type = NumpadType.Number)
-    ),
-    listOf(
-        NumpadState("×", type = NumpadType.Multiplication),
-        NumpadState("8", type = NumpadType.Number),
-        NumpadState("5", type = NumpadType.Number),
-        NumpadState("2", type = NumpadType.Number),
-        NumpadState("000", type = NumpadType.Number)
-    ),
-    listOf(
-        NumpadState("÷", type = NumpadType.Division),
-        NumpadState("9", type = NumpadType.Number),
-        NumpadState("6", type = NumpadType.Number),
-        NumpadState("3", type = NumpadType.Number)
-    ),
-    listOf(
-        NumpadState("-", type = NumpadType.Subtraction),
-        NumpadState("+", type = NumpadType.Addition)
-    )
-)
 
 @Composable
 fun NumpadRow(
@@ -129,7 +104,7 @@ fun LastColumn(
 private fun DoneButton(onClickDone: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         onClick = onClickDone,
-        modifier = modifier.height(((60 * 3) + 24).dp).padding(4.dp), // 60 is numpad height
+        modifier = modifier.height((60 * 3).dp).padding(4.dp), // 60 is numpad height
         shape = MaterialTheme.shapes.medium,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
     ) {
@@ -137,7 +112,7 @@ private fun DoneButton(onClickDone: () -> Unit, modifier: Modifier = Modifier) {
             Icon(
                 Icons.Default.Done,
                 "done",
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint = Color.White,
             )
         }
     }

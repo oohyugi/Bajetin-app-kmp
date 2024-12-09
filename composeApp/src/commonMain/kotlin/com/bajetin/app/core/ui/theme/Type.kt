@@ -56,9 +56,16 @@ fun RalewayTypography(): Typography {
             fontSize = 14.sp,
             fontFamily = raleway
         ),
+
         labelMedium = TextStyle(
             fontWeight = FontWeight.SemiBold,
             fontSize = 12.sp,
+            fontFamily = raleway
+        ),
+
+        labelSmall = TextStyle(
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 11.sp,
             fontFamily = raleway
         ),
     )

@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.unit.dp
 import bajetin.composeapp.generated.resources.Res
 import bajetin.composeapp.generated.resources.ic_add
+import com.bajetin.app.core.ui.theme.DarkPrimaryColor
 import com.bajetin.app.navigation.NavigationItem
 import org.jetbrains.compose.resources.painterResource
 
@@ -64,7 +65,7 @@ fun NavRailBar(
                     colors = NavigationRailItemDefaults.colors(
                         selectedIconColor = Color.White,
                         unselectedIconColor = Gray,
-                        indicatorColor = MaterialTheme.colorScheme.primary
+                        indicatorColor = DarkPrimaryColor
                     ),
                     onClick = { onNavBarClick(item) }
                 )
