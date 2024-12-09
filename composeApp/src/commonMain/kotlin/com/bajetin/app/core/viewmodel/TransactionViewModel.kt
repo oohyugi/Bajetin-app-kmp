@@ -128,7 +128,6 @@ class TransactionViewModel : ViewModel() {
         return token in operators
     }
 
-
     private fun evaluateExpression(expression: String): Long {
         val tokens = expression.split(" ")
         var result = tokens[0].toLongOrNull() ?: 0

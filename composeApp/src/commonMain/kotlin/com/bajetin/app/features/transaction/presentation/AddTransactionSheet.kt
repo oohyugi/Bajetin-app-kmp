@@ -23,11 +23,10 @@ import com.bajetin.app.utils.formatNumberWithDot
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun AddTransactionSheet(
     modifier: Modifier = Modifier,
-    viewModel: TransactionViewModel = koinViewModel(),
+    viewModel: TransactionViewModel,
 ) {
     val addTransactionUiState = viewModel.addTransactionUiState.collectAsStateWithLifecycle().value
     Column(

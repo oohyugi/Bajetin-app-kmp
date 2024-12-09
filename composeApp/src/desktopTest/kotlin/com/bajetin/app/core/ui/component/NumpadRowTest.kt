@@ -15,7 +15,6 @@ class NumpadRowTest {
 
     @Test
     fun `should display numpad row`() {
-
         rule.setContent {
             NumpadRow(onKeyPress = {}, onClickDone = {})
         }

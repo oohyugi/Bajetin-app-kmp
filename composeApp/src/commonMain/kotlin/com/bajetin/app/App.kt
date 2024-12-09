@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bajetin.app.core.ui.component.BottomNavBar
 import com.bajetin.app.core.ui.component.NavRailBar
 import com.bajetin.app.core.ui.theme.BajetinTheme
+import com.bajetin.app.core.viewmodel.TransactionViewModel
 import com.bajetin.app.di.platformModule
 import com.bajetin.app.di.viewModelModule
 import com.bajetin.app.features.transaction.presentation.AddTransactionSheet
@@ -33,6 +34,7 @@ import com.bajetin.app.utils.ScreenSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(ExperimentalMaterial3Api::class, KoinExperimentalAPI::class)
@@ -63,6 +65,7 @@ fun App() {
                 navHostController.currentBackStackEntryAsState().value?.destination?.route
             val showNavigationRail = screenSize != ScreenSize.COMPACT
 
+            val transactionViewModel = koinViewModel<TransactionViewModel>()
 
 
             BottomSheetScaffold(
@@ -73,6 +76,7 @@ fun App() {
                 sheetContent = {
                     AddTransactionSheet(
                         modifier = Modifier.fillMaxWidth(),
+                        viewModel = transactionViewModel
                     )
                 },
             ) {

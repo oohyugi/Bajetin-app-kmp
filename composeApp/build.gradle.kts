@@ -72,15 +72,17 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
 
+            implementation(libs.junit)
+            implementation(libs.turbine)
+
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
-
         }
 
         desktopTest.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(compose.desktop.uiTestJUnit4)
-
+            implementation(libs.androidx.lifecycle.runtime.testing.desktop)
         }
     }
 }
@@ -113,6 +115,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.lifecycle.common.jvm)
+    implementation(libs.androidx.lifecycle.runtime.testing)
+    implementation(libs.androidx.lifecycle.runtime.testing.desktop)
     debugImplementation(compose.uiTooling)
 }
 
