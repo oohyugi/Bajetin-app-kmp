@@ -66,13 +66,9 @@ fun NavRailBar(
                         unselectedIconColor = Gray,
                         indicatorColor = MaterialTheme.colorScheme.primary
                     ),
-                    onClick = {
-                        onNavBarClick(item)
-
-                    }
+                    onClick = { onNavBarClick(item) }
                 )
             }
-
         }
     }
 }

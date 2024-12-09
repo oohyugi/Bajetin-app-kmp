@@ -66,13 +66,9 @@ fun BottomNavBar(
                         indicatorColor = MaterialTheme.colorScheme.primary
                     ),
                     selected = isSelected,
-                    onClick = {
-                        onNavBarClick(item)
-
-                    }
+                    onClick = { onNavBarClick(item) }
                 )
             }
-
         }
     }
 }
