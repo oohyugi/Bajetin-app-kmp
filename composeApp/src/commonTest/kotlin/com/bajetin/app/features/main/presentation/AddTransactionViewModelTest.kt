@@ -86,7 +86,7 @@ class AddTransactionViewModelTest {
 
 class TransactionCategoryRepoFake(
     val insertFake: ((String, String?) -> Unit)? = null,
-    categories: List<TransactionCategoryEntity> = emptyList()
+    val categories: List<TransactionCategoryEntity> = emptyList()
 ) : TransactionCategoryRepo {
     private val categoryFlow = MutableStateFlow(categories)
 

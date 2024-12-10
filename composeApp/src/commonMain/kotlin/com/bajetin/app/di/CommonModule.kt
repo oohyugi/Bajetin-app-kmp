@@ -1,20 +1,21 @@
 package com.bajetin.app.di
 
 import com.bajetin.app.data.local.TransactionCategoryDataSource
-import com.bajetin.app.data.repository.TransactionCategoryRepo
-import com.bajetin.app.features.main.presentation.AddTransactionViewModel
 import com.bajetin.app.data.local.TransactionCategoryDataSourceImpl
+import com.bajetin.app.data.repository.TransactionCategoryRepo
 import com.bajetin.app.data.repository.TransactionCategoryRepoImpl
 import com.bajetin.app.db.BajetinDatabase
+import com.bajetin.app.features.main.presentation.AddTransactionViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 private const val IODispatcher = "IODispatcher"
+private const val DefaultDispatcher = "DefaultDispatcher"
 
 val coreModule = module {
     single {
@@ -22,6 +23,9 @@ val coreModule = module {
     }
     single(named(IODispatcher)) {
         Dispatchers.IO
+    }
+    single(named(DefaultDispatcher)) {
+        Dispatchers.Default
     }
 }
 
@@ -35,5 +39,7 @@ val repositoryModule = module {
 }
 
 val viewModelModule = module {
-    viewModelOf(::AddTransactionViewModel)
+    viewModel {
+        AddTransactionViewModel(get(), get(named(DefaultDispatcher)))
+    }
 }

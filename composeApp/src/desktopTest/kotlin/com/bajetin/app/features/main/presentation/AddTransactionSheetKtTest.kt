@@ -14,7 +14,7 @@ import com.bajetin.app.data.repository.TransactionCategoryRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
-import kotlin.test.Test
+import org.junit.Test
 
 class AddTransactionSheetKtTest {
     @get:Rule

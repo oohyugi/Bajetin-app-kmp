@@ -27,6 +27,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = false
+            linkerOpts("-lsqlite3")
         }
     }
 
@@ -74,16 +75,20 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
 
-            implementation(libs.junit)
-            implementation(libs.turbine)
+            implementation(libs.bundles.shared.commonTest)
 
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
         }
 
+        androidUnitTest.dependencies {
+            implementation(libs.bundles.shared.androidTest)
+        }
+
         desktopTest.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(compose.desktop.uiTestJUnit4)
+            implementation(libs.kotlin.test)
             implementation(libs.androidx.lifecycle.runtime.testing.desktop)
         }
     }
@@ -114,9 +119,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
+    testImplementation(libs.junit)
     debugImplementation(compose.uiTooling)
 }
 

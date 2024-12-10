@@ -21,6 +21,9 @@ INSERT INTO transactions (
 selectAllTransaction:
 SELECT * FROM transactions;
 
+clearAllTransactions:
+DELETE FROM transactions;
+
 CREATE TABLE categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     label TEXT NOT NULL,
@@ -35,3 +38,6 @@ INSERT INTO categories (
 
 selectAllCategories:
 SELECT * FROM categories;
+
+clearAllCategories:
+DELETE FROM categories;

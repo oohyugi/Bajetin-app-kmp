@@ -2,13 +2,13 @@ package com.bajetin.app.data.repository
 
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.local.TransactionCategoryDataSource
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TransactionCategoryRepoImplTest {
 
