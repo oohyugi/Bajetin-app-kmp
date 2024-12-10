@@ -1,22 +1,18 @@
 ## **Bajetin Personal Finance Management**
 
-**Bajetin**  is a Kotlin Multiplatform (KMP) application built to demonstrate a personal finance management system. It helps users track expenses, manage budgets, and gain better control over their finances. Leveraging KMP, the app delivers a seamless and intuitive experience across multiple platforms (Android, iOS, and Desktop) with key features to ensure users can effectively achieve their financial goals.
+**Bajetin** is a smart, cross-platform budgeting app built with Kotlin Multiplatform and Compose, offering seamless financial management across Android, iOS, and Desktop. Track expenses, set budgets, and achieve savings goals effortlessly with an intuitive and engaging design. Simplify your finances with Bajetin! 🚀
 
-___
+### **Feature Checklist for Bajetin**
 
-## **Feature Checklist for Bajetin**
+| Feature                     | Description                                                           | Status     |
+|-----------------------------|-----------------------------------------------------------------------|------------|
+| Add Transactions            | Quickly add income or expense transactions                            | 🔄 In Progress |
+| Transaction History         | View a comprehensive list of all past transactions                    | 🔄 In Progress |
+| Offline Support             | Add transactions without an internet connection                       | 🔄 In Progress |
+| Expense Tracking            | Log daily expenses with categories, descriptions, and visual insights | ⏳ Planned |
+| Budget Management           | Set monthly budgets and track spending                                | ⏳ Planned |
+| Savings Goals               | Set and track savings goals to encourage financial discipline         | ⏳ Planned |
 
-| Feature                     | Description                                                | Status      |
-|-----------------------------|------------------------------------------------------------|-------------|
-| Expense Tracking            | Log daily expenses with categories and descriptions        | 🔄 In Progress |
-| Budget Management           | Set monthly budgets and track spending                     | ⏳ Planned |
-| Transaction History         | View a comprehensive list of all past transactions         | ⏳ Planned |
-| Add Transactions            | Quickly add income or expense transactions                 | ⏳ Planned |
-| Multi-Currency Support      | Manage budgets in different currencies                     | ⏳ Planned |
-| Secure Data                 | Encrypt and protect user data                              | ⏳ Planned |
-| Offline Support             | Add transactions without an internet connection            | ⏳ Planned |
-| Shared Themes and Components| Use consistent UI elements across platforms                | ⏳ Planned |
-| Kotlin Multiplatform (KMP)  | Support for Android, iOS, and Desktop                      | ⏳ Planned |
 
 Legend:
 - ✅ Completed: Feature is fully implemented.
