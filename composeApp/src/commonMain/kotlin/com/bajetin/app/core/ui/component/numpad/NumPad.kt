@@ -27,13 +27,14 @@ fun NumPad(state: NumpadState, onKeyPress: (NumpadState) -> Unit, modifier: Modi
             Text(
                 modifier = Modifier,
                 text = state.label,
-                style = if (state.label in operators || state.label=="⌫") {
+                style = if (state.label in operators || state.label == "⌫") {
                     MaterialTheme.typography.headlineMedium
-                } else MaterialTheme.typography.titleMedium,
+                } else {
+                    MaterialTheme.typography.titleMedium
+                },
                 textAlign = TextAlign.Center,
             )
         }
-
     }
 }
 

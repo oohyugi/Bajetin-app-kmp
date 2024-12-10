@@ -1,4 +1,4 @@
-package com.bajetin.app.utils
+package com.bajetin.app.core.utils
 
 import com.bajetin.app.core.ui.component.numpad.operators
 

@@ -18,10 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bajetin.app.core.ui.component.numpad.NumpadRow
 import com.bajetin.app.core.viewmodel.TransactionViewModel
-import com.bajetin.app.utils.containsAnyOperator
-import com.bajetin.app.utils.formatNumberWithDot
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
+import com.bajetin.app.core.utils.containsAnyOperator
+import com.bajetin.app.core.utils.formatNumberWithDot
 
 @Composable
 fun AddTransactionSheet(
@@ -34,8 +32,6 @@ fun AddTransactionSheet(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
-
         val expression = remember(addTransactionUiState.expression) {
             if (addTransactionUiState.expression.containsAnyOperator()) addTransactionUiState.expression else ""
         }
@@ -61,4 +57,3 @@ fun AddTransactionSheet(
         )
     }
 }
-

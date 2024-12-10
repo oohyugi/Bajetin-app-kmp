@@ -5,17 +5,15 @@ import com.bajetin.app.core.ui.component.numpad.NumpadState
 import com.bajetin.app.core.ui.component.numpad.NumpadType
 import com.bajetin.app.core.ui.component.numpad.operators
 import com.bajetin.app.features.transaction.presentation.AddTransactionState
-import com.bajetin.app.utils.containsAnyOperator
+import com.bajetin.app.core.utils.containsAnyOperator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class TransactionViewModel : ViewModel() {
 
-
     private var _addTransactionUiState = MutableStateFlow(AddTransactionState())
     val addTransactionUiState = _addTransactionUiState.asStateFlow()
-
 
     fun onKeyPress(numpadState: NumpadState) {
         when (numpadState.type) {
@@ -31,7 +29,7 @@ class TransactionViewModel : ViewModel() {
     }
 
     fun onClickDone() {
-
+// TODO
     }
 
     private fun handleOperatorInput(symbol: String) {
@@ -75,13 +73,11 @@ class TransactionViewModel : ViewModel() {
             return
         }
 
-
         val newExpression = if (currentExpression.isEmpty()) {
             newAmount
         } else {
             currentExpression + digitStr
         }
-
 
         val result = evaluateExpression(newExpression)
 

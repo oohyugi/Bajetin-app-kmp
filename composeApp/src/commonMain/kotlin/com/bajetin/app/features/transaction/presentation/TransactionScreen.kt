@@ -16,6 +16,5 @@ fun TransactionScreen() {
             )
         }
     ) {
-
     }
 }

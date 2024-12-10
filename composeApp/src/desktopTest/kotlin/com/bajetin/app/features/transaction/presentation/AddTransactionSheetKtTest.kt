@@ -13,22 +13,18 @@ import com.bajetin.app.core.viewmodel.TransactionViewModel
 import org.junit.Rule
 import kotlin.test.Test
 
-
 class AddTransactionSheetKtTest {
     @get:Rule
     val rule = createComposeRule()
 
     @Test
-    fun `should display bottom sheet add transaction row`()  {
-
+    fun `should display bottom sheet add transaction row`() {
         val testLifecycleOwner = TestLifecycleOwner(Lifecycle.State.RESUMED)
-
         rule.setContent {
             CompositionLocalProvider(
                 value = LocalLifecycleOwner provides testLifecycleOwner
             ) {
                 AddTransactionSheet(viewModel = TransactionViewModel())
-
             }
         }
 

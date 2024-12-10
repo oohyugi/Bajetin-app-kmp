@@ -41,7 +41,6 @@ fun NavRailBar(
                         onNavBarClick(item)
                     }
                 )
-
             } else {
                 NavigationRailItem(
 

@@ -1,4 +1,4 @@
-package com.bajetin.app.utils
+package com.bajetin.app.core.utils
 
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp

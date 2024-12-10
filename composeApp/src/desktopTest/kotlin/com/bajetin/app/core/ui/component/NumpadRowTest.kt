@@ -3,7 +3,6 @@ package com.bajetin.app.core.ui.component
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.bajetin.app.core.ui.component.numpad.NumpadRow
 import org.junit.Rule
@@ -28,6 +27,5 @@ class NumpadRowTest {
         rule.onNodeWithText("÷").assertIsDisplayed()
         rule.onNodeWithText("000").assertIsDisplayed()
         rule.onNodeWithContentDescription("done").assertIsDisplayed()
-
     }
 }

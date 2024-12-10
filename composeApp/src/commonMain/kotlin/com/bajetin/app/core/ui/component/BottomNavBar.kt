@@ -41,7 +41,6 @@ fun BottomNavBar(
                         onNavBarClick(item)
                     }
                 )
-
             } else {
                 NavigationBarItem(
 

@@ -7,7 +7,6 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-
 class TransactionViewModelTest {
 
     @Test
@@ -37,11 +36,12 @@ class TransactionViewModelTest {
             assertEquals(maxValue.toString(), state.transactionAmount)
         }
     }
+
     @Test
     fun `onKeyPress ignores invalid operator`() = runTest {
         val viewModel = TransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
-        viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label =  "+"))
+        viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
 
         viewModel.addTransactionUiState.test {
@@ -54,7 +54,7 @@ class TransactionViewModelTest {
     @Test
     fun `onKeyPress handles Clear correctly`() = runTest {
         val viewModel = TransactionViewModel()
-        viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label =  "5"))
+        viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Clear, label = ""))
 
         viewModel.addTransactionUiState.test {

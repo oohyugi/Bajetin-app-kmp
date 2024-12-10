@@ -30,7 +30,7 @@ import com.bajetin.app.di.viewModelModule
 import com.bajetin.app.features.transaction.presentation.AddTransactionSheet
 import com.bajetin.app.navigation.Navigation
 import com.bajetin.app.navigation.NavigationItem
-import com.bajetin.app.utils.ScreenSize
+import com.bajetin.app.core.utils.ScreenSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.KoinApplication
@@ -40,13 +40,11 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @OptIn(ExperimentalMaterial3Api::class, KoinExperimentalAPI::class)
 @Composable
 fun App() {
-
     KoinApplication(
         application = {
             modules(platformModule, viewModelModule)
         }
     ) {
-
         BajetinTheme {
             val navHostController = rememberNavController()
             val scope = rememberCoroutineScope()
@@ -58,15 +56,14 @@ fun App() {
                 NavigationItem.Add,
                 NavigationItem.Report,
             )
-
-            val isTopLevelDestination =
-                navHostController.currentBackStackEntryAsState().value?.destination?.route in topLevelDestinations.map { it.route }
             val currentDestination =
                 navHostController.currentBackStackEntryAsState().value?.destination?.route
+            val isTopLevelDestination =
+                currentDestination in topLevelDestinations.map { it.route }
+
             val showNavigationRail = screenSize != ScreenSize.COMPACT
 
             val transactionViewModel = koinViewModel<TransactionViewModel>()
-
 
             BottomSheetScaffold(
                 scaffoldState = scaffoldState,
@@ -81,7 +78,7 @@ fun App() {
                 },
             ) {
                 Scaffold(bottomBar = {
-                    if (isTopLevelDestination && !showNavigationRail)
+                    if (isTopLevelDestination && !showNavigationRail) {
                         BottomNavBar(
                             bottomNavItems = topLevelDestinations,
                             currentRoute = currentDestination,
@@ -93,9 +90,9 @@ fun App() {
                                     currentDestination,
                                     navHostController
                                 )
-
                             }
                         )
+                    }
                 }) {
                     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
                         screenSize = ScreenSize.basedOnWidth(this.maxWidth)
@@ -123,7 +120,6 @@ fun App() {
                         }
                     }
                 }
-
             }
         }
     }
@@ -145,10 +141,9 @@ private fun onNavBarClick(
         }
 
         else -> {
-            if (item.route != currentDestination) navHostController.navigate(
-                route = item.route
-            )
+            if (item.route != currentDestination) {
+                navHostController.navigate(route = item.route)
+            }
         }
     }
 }
-

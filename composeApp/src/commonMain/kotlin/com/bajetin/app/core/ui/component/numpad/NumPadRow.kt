@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-
 @Composable
 fun NumpadRow(
     onKeyPress: (NumpadState) -> Unit,
@@ -49,7 +48,6 @@ fun NumpadRow(
             onClickDone = onClickDone,
             modifier = Modifier.weight(1f)
         )
-
     }
 }
 
@@ -94,7 +92,6 @@ fun LastColumn(
                 onKeyPress = onKeyPress,
                 modifier = Modifier.fillMaxWidth().padding(4.dp)
             )
-
         }
         DoneButton(onClickDone, modifier = Modifier.fillMaxWidth())
     }

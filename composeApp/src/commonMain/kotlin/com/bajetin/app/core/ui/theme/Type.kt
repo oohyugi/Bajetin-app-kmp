@@ -13,7 +13,6 @@ import androidx.compose.ui.unit.sp
 import bajetin.composeapp.generated.resources.raleway_bold
 import bajetin.composeapp.generated.resources.raleway_semibold
 
-
 @Composable
 fun RalewayTypography(): Typography {
     val raleway = FontFamily(
