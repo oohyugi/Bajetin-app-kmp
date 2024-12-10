@@ -26,6 +26,8 @@ fun AddTransactionSheet(
     viewModel: AddTransactionViewModel,
 ) {
     val addTransactionUiState = viewModel.addTransactionUiState.collectAsStateWithLifecycle().value
+
+    val categoryUiState = viewModel.categoryUiState.collectAsStateWithLifecycle().value
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -37,6 +39,9 @@ fun AddTransactionSheet(
 
         Text(expression, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
 
+        categoryUiState.forEach {
+            Text(it.label)
+        }
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {

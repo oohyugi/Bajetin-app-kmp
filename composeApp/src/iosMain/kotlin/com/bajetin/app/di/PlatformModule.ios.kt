@@ -6,6 +6,8 @@ import com.bajetin.app.db.BajetinDatabase
 import org.koin.dsl.module
 
 actual val platformModule = module {
+    single { Platform.iOS }
+
     single<SqlDriver> {
         NativeSqliteDriver(
             schema = BajetinDatabase.Schema,

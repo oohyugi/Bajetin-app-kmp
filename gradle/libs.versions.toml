@@ -50,8 +50,10 @@ sqldelight-android-driver = { group = "app.cash.sqldelight", name = "android-dri
 sqldelight-native-driver = { group = "app.cash.sqldelight", name = "native-driver", version.ref = "sqlDelight" }
 sqldelight-sql-driver = { group = "app.cash.sqldelight", name = "sqlite-driver", version.ref = "sqlDelight" }
 sqldelight-runtime = { group = "app.cash.sqldelight", name = "runtime", version.ref = "sqlDelight" }
+sqldelight-extensions = { group = "app.cash.sqldelight", name = "coroutines-extensions", version.ref = "sqlDelight" }
 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinCompose" }
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel", version.ref = "koinCompose" }
 

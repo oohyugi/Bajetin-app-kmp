@@ -1,18 +1,22 @@
-package com.bajetin.app.core.viewmodel
+package com.bajetin.app.features.main.presentation
 
 import app.cash.turbine.test
+import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.repository.TransactionCategoryRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
-import com.bajetin.app.features.main.presentation.AddTransactionViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AddTransactionViewModelTest {
 
+    private val viewModel = AddTransactionViewModel(TransactionCategoryRepoFake())
+
     @Test
     fun `onKeyPress with operator appends to expression`() = runTest {
-        val viewModel = AddTransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "3"))
@@ -29,7 +33,6 @@ class AddTransactionViewModelTest {
         val maxValue = 999_999_999_999L
         val number = "9".repeat(13) // Greater than maxValue
 
-        val viewModel = AddTransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = number))
 
         viewModel.addTransactionUiState.test {
@@ -40,7 +43,6 @@ class AddTransactionViewModelTest {
 
     @Test
     fun `onKeyPress ignores invalid operator`() = runTest {
-        val viewModel = AddTransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
@@ -54,7 +56,6 @@ class AddTransactionViewModelTest {
 
     @Test
     fun `onKeyPress handles Clear correctly`() = runTest {
-        val viewModel = AddTransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Clear, label = ""))
 
@@ -64,4 +65,34 @@ class AddTransactionViewModelTest {
             assertEquals("0", state.transactionAmount)
         }
     }
+
+    @Test
+    fun `should return default categories`() = runTest {
+        val viewModel = AddTransactionViewModel(
+            TransactionCategoryRepoFake(
+                categories = TransactionCategoryEntity.initialCategories,
+            )
+        )
+
+        viewModel.categoryUiState.test {
+            assertEquals(emptyList(), awaitItem())
+            assertEquals(
+                TransactionCategoryEntity.initialCategories,
+                awaitItem()
+            )
+        }
+    }
+}
+
+class TransactionCategoryRepoFake(
+    val insertFake: ((String, String?) -> Unit)? = null,
+    categories: List<TransactionCategoryEntity> = emptyList()
+) : TransactionCategoryRepo {
+    private val categoryFlow = MutableStateFlow(categories)
+
+    override suspend fun insert(label: String, emoticon: String?) {
+        insertFake?.invoke(label, emoticon)
+    }
+
+    override fun getAll(): Flow<List<TransactionCategoryEntity>> = categoryFlow
 }

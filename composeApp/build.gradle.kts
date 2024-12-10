@@ -40,6 +40,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.sqldelight.android.driver)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -59,6 +60,7 @@ kotlin {
 
             implementation(libs.kotlinx.datetime)
             implementation(libs.sqldelight.runtime)
+            implementation(libs.sqldelight.extensions)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

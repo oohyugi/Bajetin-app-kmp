@@ -20,3 +20,18 @@ INSERT INTO transactions (
 
 selectAllTransaction:
 SELECT * FROM transactions;
+
+CREATE TABLE categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    label TEXT NOT NULL,
+    emoticon TEXT DEFAULT NULL
+);
+
+insertCategory:
+INSERT INTO categories (
+    label,
+    emoticon
+) VALUES (?,?);
+
+selectAllCategories:
+SELECT * FROM categories;

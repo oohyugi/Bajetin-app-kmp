@@ -1,18 +1,32 @@
 package com.bajetin.app.features.main.presentation
 
 import androidx.lifecycle.ViewModel
-import com.bajetin.app.features.main.presentation.component.NumpadState
-import com.bajetin.app.features.main.presentation.component.NumpadType
+import androidx.lifecycle.viewModelScope
 import com.bajetin.app.core.utils.containsAnyOperator
 import com.bajetin.app.core.utils.operators
+import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.repository.TransactionCategoryRepo
+import com.bajetin.app.features.main.presentation.component.NumpadState
+import com.bajetin.app.features.main.presentation.component.NumpadType
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-class AddTransactionViewModel : ViewModel() {
+class AddTransactionViewModel(private val transactionCategoryRepo: TransactionCategoryRepo) :
+    ViewModel() {
 
     private var _addTransactionUiState = MutableStateFlow(AddTransactionState())
     val addTransactionUiState = _addTransactionUiState.asStateFlow()
+
+    val categoryUiState: StateFlow<List<TransactionCategoryEntity>> =
+        transactionCategoryRepo.getAll().stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     fun onKeyPress(numpadState: NumpadState) {
         when (numpadState.type) {

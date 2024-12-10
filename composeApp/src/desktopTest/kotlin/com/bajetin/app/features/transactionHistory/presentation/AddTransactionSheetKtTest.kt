@@ -9,8 +9,12 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.testing.TestLifecycleOwner
+import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.repository.TransactionCategoryRepo
 import com.bajetin.app.features.main.presentation.AddTransactionViewModel
 import com.bajetin.app.features.main.presentation.AddTransactionSheet
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import kotlin.test.Test
 
@@ -25,7 +29,18 @@ class AddTransactionSheetKtTest {
             CompositionLocalProvider(
                 value = LocalLifecycleOwner provides testLifecycleOwner
             ) {
-                AddTransactionSheet(viewModel = AddTransactionViewModel())
+                AddTransactionSheet(
+                    viewModel = AddTransactionViewModel(
+                        transactionCategoryRepo = object :
+                            TransactionCategoryRepo {
+                            override suspend fun insert(label: String, emoticon: String?) = Unit
+
+                            override fun getAll(): Flow<List<TransactionCategoryEntity>> {
+                                return flowOf()
+                            }
+                        }
+                    )
+                )
             }
         }
 
