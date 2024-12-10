@@ -5,8 +5,7 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import com.bajetin.app.db.BajetinDatabase
 import org.koin.dsl.module
 
-actual val platformModule = module {
-    single<Platform> { Platform.Android }
+actual val sqlDriverModule = module {
     single<SqlDriver> {
         AndroidSqliteDriver(
             schema = BajetinDatabase.Schema,

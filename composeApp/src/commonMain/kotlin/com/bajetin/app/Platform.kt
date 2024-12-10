@@ -1,8 +1,4 @@
-package com.bajetin.app.di
-
-import org.koin.core.module.Module
-
-expect val platformModule: Module
+package com.bajetin.app
 
 sealed class Platform {
     data object Android : Platform()
@@ -10,3 +6,5 @@ sealed class Platform {
     data object Desktop : Platform()
     data object Unknown : Platform()
 }
+
+expect fun getPlatform(): Platform

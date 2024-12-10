@@ -1,4 +1,4 @@
-CREATE TABLE transactions (
+CREATE TABLE IF NOT EXISTS transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     note TEXT DEFAULT NULL,
     amount INTEGER DEFAULT 0,
@@ -24,7 +24,7 @@ SELECT * FROM transactions;
 clearAllTransactions:
 DELETE FROM transactions;
 
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     label TEXT NOT NULL,
     emoticon TEXT DEFAULT NULL
