@@ -1,5 +1,7 @@
 package com.bajetin.app.features.main.presentation.component
 
+import com.bajetin.app.core.utils.Constants.operators
+
 enum class NumpadType {
     Addition,
     Subtraction,
@@ -12,7 +14,9 @@ enum class NumpadType {
 class NumpadState(
     val label: String,
     val type: NumpadType,
-)
+) {
+    val isLabelContainsOperator = operators.any { label.contains(it) }
+}
 
 val numpadsState = listOf(
     listOf(

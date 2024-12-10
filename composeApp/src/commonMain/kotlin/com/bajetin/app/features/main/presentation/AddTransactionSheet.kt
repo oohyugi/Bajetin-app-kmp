@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bajetin.app.features.main.presentation.component.NumpadRow
-import com.bajetin.app.core.utils.containsAnyOperator
 import com.bajetin.app.core.utils.formatNumberWithDot
 
 @Composable
@@ -34,7 +33,7 @@ fun AddTransactionSheet(
         verticalArrangement = Arrangement.Top
     ) {
         val expression = remember(addTransactionUiState.expression) {
-            if (addTransactionUiState.expression.containsAnyOperator()) addTransactionUiState.expression else ""
+            if (addTransactionUiState.isExpressionContainsAnyOperator()) addTransactionUiState.expression else ""
         }
 
         Text(expression, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)

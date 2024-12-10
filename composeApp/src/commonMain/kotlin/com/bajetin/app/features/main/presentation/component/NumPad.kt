@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.bajetin.app.core.utils.operators
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -28,7 +27,7 @@ fun NumPad(state: NumpadState, onKeyPress: (NumpadState) -> Unit, modifier: Modi
             Text(
                 modifier = Modifier,
                 text = state.label,
-                style = if (state.label in operators || state.label == "⌫") {
+                style = if (state.isLabelContainsOperator || state.label == "⌫") {
                     MaterialTheme.typography.headlineMedium
                 } else {
                     MaterialTheme.typography.titleMedium

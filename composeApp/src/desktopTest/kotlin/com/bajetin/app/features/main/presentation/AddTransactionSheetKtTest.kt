@@ -1,4 +1,4 @@
-package com.bajetin.app.features.transactionHistory.presentation
+package com.bajetin.app.features.main.presentation
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
@@ -11,8 +11,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.testing.TestLifecycleOwner
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.repository.TransactionCategoryRepo
-import com.bajetin.app.features.main.presentation.AddTransactionViewModel
-import com.bajetin.app.features.main.presentation.AddTransactionSheet
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule

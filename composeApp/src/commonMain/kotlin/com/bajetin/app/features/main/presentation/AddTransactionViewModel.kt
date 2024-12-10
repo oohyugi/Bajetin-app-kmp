@@ -2,8 +2,7 @@ package com.bajetin.app.features.main.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bajetin.app.core.utils.containsAnyOperator
-import com.bajetin.app.core.utils.operators
+import com.bajetin.app.core.utils.Constants.operators
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.repository.TransactionCategoryRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
@@ -106,7 +105,7 @@ class AddTransactionViewModel(private val transactionCategoryRepo: TransactionCa
         val currentAmount = currentState.transactionAmount
 
         // clear completely if the expression contains an operator
-        if (currentExpression.containsAnyOperator()) {
+        if (currentState.isExpressionContainsAnyOperator()) {
             updateAddTransactionUiState(
                 amountStr = "0",
                 expression = ""
