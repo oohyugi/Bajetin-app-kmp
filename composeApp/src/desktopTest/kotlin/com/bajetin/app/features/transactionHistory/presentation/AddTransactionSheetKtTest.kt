@@ -1,4 +1,4 @@
-package com.bajetin.app.features.transaction.presentation
+package com.bajetin.app.features.transactionHistory.presentation
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.assertIsDisplayed
@@ -9,7 +9,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.testing.TestLifecycleOwner
-import com.bajetin.app.core.viewmodel.TransactionViewModel
+import com.bajetin.app.features.main.presentation.AddTransactionViewModel
+import com.bajetin.app.features.main.presentation.AddTransactionSheet
 import org.junit.Rule
 import kotlin.test.Test
 
@@ -24,7 +25,7 @@ class AddTransactionSheetKtTest {
             CompositionLocalProvider(
                 value = LocalLifecycleOwner provides testLifecycleOwner
             ) {
-                AddTransactionSheet(viewModel = TransactionViewModel())
+                AddTransactionSheet(viewModel = AddTransactionViewModel())
             }
         }
 

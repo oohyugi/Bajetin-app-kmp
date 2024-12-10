@@ -1,6 +1,6 @@
 package com.bajetin.app.core.utils
 
-import com.bajetin.app.core.ui.component.numpad.operators
+val operators = listOf("+", "-", "×", "÷")
 
 fun String.formatNumberWithDot(): String {
     return reversed()

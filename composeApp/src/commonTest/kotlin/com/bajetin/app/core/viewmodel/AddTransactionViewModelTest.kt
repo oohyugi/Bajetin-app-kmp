@@ -1,17 +1,18 @@
 package com.bajetin.app.core.viewmodel
 
 import app.cash.turbine.test
-import com.bajetin.app.core.ui.component.numpad.NumpadState
-import com.bajetin.app.core.ui.component.numpad.NumpadType
+import com.bajetin.app.features.main.presentation.component.NumpadState
+import com.bajetin.app.features.main.presentation.component.NumpadType
+import com.bajetin.app.features.main.presentation.AddTransactionViewModel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TransactionViewModelTest {
+class AddTransactionViewModelTest {
 
     @Test
     fun `onKeyPress with operator appends to expression`() = runTest {
-        val viewModel = TransactionViewModel()
+        val viewModel = AddTransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "3"))
@@ -28,7 +29,7 @@ class TransactionViewModelTest {
         val maxValue = 999_999_999_999L
         val number = "9".repeat(13) // Greater than maxValue
 
-        val viewModel = TransactionViewModel()
+        val viewModel = AddTransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = number))
 
         viewModel.addTransactionUiState.test {
@@ -39,7 +40,7 @@ class TransactionViewModelTest {
 
     @Test
     fun `onKeyPress ignores invalid operator`() = runTest {
-        val viewModel = TransactionViewModel()
+        val viewModel = AddTransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
@@ -53,7 +54,7 @@ class TransactionViewModelTest {
 
     @Test
     fun `onKeyPress handles Clear correctly`() = runTest {
-        val viewModel = TransactionViewModel()
+        val viewModel = AddTransactionViewModel()
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Clear, label = ""))
 

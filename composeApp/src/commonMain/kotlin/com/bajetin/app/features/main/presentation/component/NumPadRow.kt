@@ -1,4 +1,4 @@
-package com.bajetin.app.core.ui.component.numpad
+package com.bajetin.app.features.main.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

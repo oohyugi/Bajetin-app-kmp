@@ -1,4 +1,4 @@
-package com.bajetin.app.features.transaction.presentation
+package com.bajetin.app.features.main.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,15 +16,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.bajetin.app.core.ui.component.numpad.NumpadRow
-import com.bajetin.app.core.viewmodel.TransactionViewModel
+import com.bajetin.app.features.main.presentation.component.NumpadRow
 import com.bajetin.app.core.utils.containsAnyOperator
 import com.bajetin.app.core.utils.formatNumberWithDot
 
 @Composable
 fun AddTransactionSheet(
     modifier: Modifier = Modifier,
-    viewModel: TransactionViewModel,
+    viewModel: AddTransactionViewModel,
 ) {
     val addTransactionUiState = viewModel.addTransactionUiState.collectAsStateWithLifecycle().value
     Column(

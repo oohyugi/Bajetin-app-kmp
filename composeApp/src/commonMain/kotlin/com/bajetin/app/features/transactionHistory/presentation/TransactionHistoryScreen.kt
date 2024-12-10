@@ -1,4 +1,4 @@
-package com.bajetin.app.features.transaction.presentation
+package com.bajetin.app.features.transactionHistory.presentation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransactionScreen() {
+fun TransactionHistoryScreen() {
     Scaffold(
         topBar = {
             TopAppBar(

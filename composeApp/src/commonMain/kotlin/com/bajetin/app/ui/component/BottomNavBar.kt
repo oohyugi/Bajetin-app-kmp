@@ -1,4 +1,4 @@
-package com.bajetin.app.core.ui.component
+package com.bajetin.app.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,16 +16,16 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.unit.dp
 import bajetin.composeapp.generated.resources.Res
 import bajetin.composeapp.generated.resources.ic_add
-import com.bajetin.app.core.ui.theme.DarkPrimaryColor
-import com.bajetin.app.navigation.NavigationItem
+import com.bajetin.app.ui.theme.DarkPrimaryColor
+import com.bajetin.app.navigation.BottomNavItem
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun BottomNavBar(
     modifier: Modifier = Modifier,
     currentRoute: String?,
-    bottomNavItems: List<NavigationItem>,
-    onNavBarClick: (NavigationItem) -> Unit,
+    bottomNavItems: List<BottomNavItem>,
+    onNavBarClick: (BottomNavItem) -> Unit,
 ) {
     NavigationBar(
         modifier = modifier.fillMaxWidth(),
@@ -33,7 +33,7 @@ fun BottomNavBar(
     ) {
         bottomNavItems.iterator().forEach { item ->
             val isSelected = item.route == currentRoute
-            if (item == NavigationItem.Add) {
+            if (item == BottomNavItem.Add) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_add),
                     "add transaction",

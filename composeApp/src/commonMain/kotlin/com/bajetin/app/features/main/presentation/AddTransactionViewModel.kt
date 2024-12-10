@@ -1,16 +1,15 @@
-package com.bajetin.app.core.viewmodel
+package com.bajetin.app.features.main.presentation
 
 import androidx.lifecycle.ViewModel
-import com.bajetin.app.core.ui.component.numpad.NumpadState
-import com.bajetin.app.core.ui.component.numpad.NumpadType
-import com.bajetin.app.core.ui.component.numpad.operators
-import com.bajetin.app.features.transaction.presentation.AddTransactionState
+import com.bajetin.app.features.main.presentation.component.NumpadState
+import com.bajetin.app.features.main.presentation.component.NumpadType
 import com.bajetin.app.core.utils.containsAnyOperator
+import com.bajetin.app.core.utils.operators
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class TransactionViewModel : ViewModel() {
+class AddTransactionViewModel : ViewModel() {
 
     private var _addTransactionUiState = MutableStateFlow(AddTransactionState())
     val addTransactionUiState = _addTransactionUiState.asStateFlow()

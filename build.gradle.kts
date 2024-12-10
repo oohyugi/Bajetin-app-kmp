@@ -23,8 +23,6 @@ val detektTask = tasks.register<JavaExec>("detekt") {
 
     val autoFormatEnabled = project.hasProperty("auto-correct")
 
-    println("command ${project.properties}")
-
     val params = listOf(
         "-i",
         input,

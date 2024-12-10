@@ -6,15 +6,15 @@ import bajetin.composeapp.generated.resources.ic_graph
 import bajetin.composeapp.generated.resources.ic_transaction
 import org.jetbrains.compose.resources.DrawableResource
 
-sealed class NavigationItem(
+sealed class BottomNavItem(
     val route: String,
     val title: String,
     val icon: DrawableResource? = null
 ) {
 
     data object Transaction :
-        NavigationItem(route = "/transaction", "Transaction", Res.drawable.ic_transaction)
+        BottomNavItem(route = "/transaction", "Transaction", Res.drawable.ic_transaction)
 
-    data object Add : NavigationItem(route = "", "", Res.drawable.ic_add)
-    data object Report : NavigationItem(route = "/report", "Report", Res.drawable.ic_graph)
+    data object Add : BottomNavItem(route = "", "", Res.drawable.ic_add)
+    data object Report : BottomNavItem(route = "/report", "Report", Res.drawable.ic_graph)
 }

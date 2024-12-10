@@ -1,4 +1,4 @@
-package com.bajetin.app.core.ui.component.numpad
+package com.bajetin.app.features.main.presentation.component
 
 enum class NumpadType {
     Addition,
@@ -13,8 +13,6 @@ class NumpadState(
     val label: String,
     val type: NumpadType,
 )
-
-val operators = listOf("+", "-", "×", "÷")
 
 val numpadsState = listOf(
     listOf(
