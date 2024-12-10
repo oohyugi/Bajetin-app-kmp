@@ -4,14 +4,14 @@
 
 ## **Feature Checklist for Bajetin**
 
-| Feature                     | Description                                                       | Status         |
-|-----------------------------|-------------------------------------------------------------------|----------------|
-| Add Transactions            | Quickly add income or expense transactions                        | 🔄 In Progress |
-| Transaction History         | View a comprehensive list of all past transactions                | 🔄 In Progress |
-| Offline Support             | Add transactions without an internet connection                   | 🔄 In Progress |
-| Expense Tracking            | Log daily expenses with categories, descriptions, and visual insights | ⏳ Planned      |
-| Budget Management           | Set monthly budgets and track spending                            | ⏳ Planned      |
-| Savings Goals               | Set and track savings goals to encourage financial discipline     | ⏳ Planned      |
+| Feature                     | Description                                                       | Status |
+|-----------------------------|-------------------------------------------------------------------|--------|
+| Add Transactions            | Quickly add income or expense transactions                        | 🔄     |
+| Transaction History         | View a comprehensive list of all past transactions                | 🔄     |
+| Offline Support             | Add transactions without an internet connection                   | 🔄     |
+| Expense Tracking            | Log daily expenses with categories, descriptions, and visual insights | ⏳      |
+| Budget Management           | Set monthly budgets and track spending                            | ⏳      |
+| Savings Goals               | Set and track savings goals to encourage financial discipline     | ⏳      |
 
 
 Legend:
