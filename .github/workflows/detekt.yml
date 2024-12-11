@@ -31,29 +31,29 @@ jobs:
         run: ./gradlew detekt -Pauto-correct
         continue-on-error: true
 
-#          # Make sure we always run this upload task,
-#          # because the previous step may fail if there are findings.
-#      - name: Upload SARIF to GitHub using the upload-sarif action
-#        uses: github/codeql-action/upload-sarif@v2
-#        if: success() || failure()
-#        with:
-#          sarif_file: build/reports/detekt/detekt.sarif
-
-      - name: Upload Detekt Report to Github PR
-        uses: peter-evans/create-or-update-comment@v4
+      # Make sure we always run this upload task,
+      # because the previous step may fail if there are findings.
+      - name: Upload SARIF to GitHub using the upload-sarif action
+        uses: github/codeql-action/upload-sarif@v2
+        if: success() || failure()
         with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ## Detekt Report
-            Detekt has finished running. Please check the [full report](https://github.com/${{ github.repository }}/blob/${{ github.sha }}/build/reports/detekt/detekt-report.html) for details.
-          
-            ### Detekt Issues:
-            ```bash
-            $(cat build/reports/detekt/detekt-report.html | grep -oP '(?<=<p>)(.*?)(?=</p>)')
-            ```
+          sarif_file: build/reports/detekt/detekt.sarif
 
-      - name: Fail the build if Detekt has errors
-        run: |
-          if grep -q 'error' build/reports/detekt/detekt-report.html; then
-            exit 1
-          fi
+#      - name: Upload Detekt Report to Github PR
+#        uses: peter-evans/create-or-update-comment@v4
+#        with:
+#          issue-number: ${{ github.event.pull_request.number }}
+#          body: |
+#            ## Detekt Report
+#            Detekt has finished running. Please check the [full report](https://github.com/${{ github.repository }}/blob/${{ github.sha }}/build/reports/detekt/detekt-report.html) for details.
+#
+#            ### Detekt Issues:
+#            ```bash
+#            $(cat build/reports/detekt/detekt-report.html | grep -oP '(?<=<p>)(.*?)(?=</p>)')
+#            ```
+#
+#      - name: Fail the build if Detekt has errors
+#        run: |
+#          if grep -q 'error' build/reports/detekt/detekt-report.html; then
+#            exit 1
+#          fi
