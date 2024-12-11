@@ -10,7 +10,7 @@ on:
 
 jobs:
   detekt:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout code
@@ -19,11 +19,11 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: '21'
+          distribution: 'zulu'
           java-version: '11'
 
       - name: Cache Gradle dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
