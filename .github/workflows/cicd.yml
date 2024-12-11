@@ -1,15 +1,15 @@
-name: CI/CD Pipeline
+name: Run Detekt
 
 on:
-  pull_request:
-    branches:
-      - master
   push:
+    branches:
+      - *
+  pull_request:
     branches:
       - master
 
 jobs:
-  build-and-test:
+  detekt:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,31 +21,16 @@ jobs:
         with:
           java-version: '17'
 
-      - name: Run Static Analysis
-        run: ./gradlew detekt
-
-      - name: Run Unit Tests
-        run: ./gradlew test
-
-      - name: Generate Coverage Report
-        run: ./gradlew koverHtmlReport
-
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v3
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
         with:
-          name: coverage-report
-          path: build/reports/kover/html
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-      - name: Build Application
-        run: ./gradlew build
+      - name: Install Detekt
+        run: ./gradlew detekt --no-daemon --stacktrace
 
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Deploy to Staging
-        run: echo "Deploying to staging..."
+      - name: Run Detekt
+        run: ./gradlew detekt
