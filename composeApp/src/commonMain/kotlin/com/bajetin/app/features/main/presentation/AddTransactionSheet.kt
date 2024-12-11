@@ -39,7 +39,7 @@ fun AddTransactionSheet(
         Text(expression, style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
 
         categoryUiState.forEach {
-            Text(it.label)
+            Text("${it.emoticon} ${it.label}")
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
