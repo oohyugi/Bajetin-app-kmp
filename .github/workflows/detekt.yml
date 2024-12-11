@@ -27,9 +27,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Install Detekt
-        run: ./gradlew detekt --no-daemon --stacktrace
-
       - name: Run Detekt
         run: ./gradlew detekt -Pauto-correct --format html --output build/reports/detekt/detekt-report.html
 
