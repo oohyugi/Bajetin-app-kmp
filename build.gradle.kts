@@ -19,7 +19,7 @@ val detektTask = tasks.register<JavaExec>("detekt") {
     val config = "config/detekt/detekt.yml"
     val exclude = "**/build/**,**/resources/**"
     val report =
-        "xml:build/reports/detekt.xml,html:build/reports/detekt.html,txt:build/reports/detekt.txt,sarif:build/reports/detekt.sarif"
+        "xml:build/reports/detekt.xml,html:build/reports/detekt.html,txt:build/reports/detekt.txt,sarif:build/reports/detekt/detekt.sarif"
 
     val autoFormatEnabled = project.hasProperty("auto-correct")
 
