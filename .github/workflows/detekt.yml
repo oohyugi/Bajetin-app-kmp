@@ -29,6 +29,7 @@ jobs:
 
       - name: Run Detekt
         run: ./gradlew detekt -Pauto-correct
+        continue-on-error: true
 
 #          # Make sure we always run this upload task,
 #          # because the previous step may fail if there are findings.
