@@ -37,3 +37,12 @@ jobs:
         if: success() || failure()
         with:
           sarif_file: build/reports/detekt/detekt.sarif
+
+      - name: Generate code coverage report with Kover
+        run: ./gradlew koverReport
+
+      - name: Upload Kover HTML report
+        uses: actions/upload-artifact@v3
+        with:
+          name: kover-report
+          path: composeApp/build/reports/kover/html # Adjust the path if needed
