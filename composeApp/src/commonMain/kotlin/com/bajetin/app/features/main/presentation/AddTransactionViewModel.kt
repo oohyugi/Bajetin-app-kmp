@@ -2,8 +2,9 @@ package com.bajetin.app.features.main.presentation
 
 import androidx.lifecycle.ViewModel
 import com.bajetin.app.core.utils.Constants.operators
+import com.bajetin.app.core.utils.evaluateExpression
 import com.bajetin.app.data.entity.TransactionCategoryEntity
-import com.bajetin.app.data.repository.TransactionCategoryRepo
+import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,8 +18,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class AddTransactionViewModel(
-    private val transactionCategoryRepo: TransactionCategoryRepo,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Default
+    private val transactionRepo: TransactionRepo,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) :
     ViewModel() {
 
@@ -26,7 +27,7 @@ class AddTransactionViewModel(
     val addTransactionUiState = _addTransactionUiState.asStateFlow()
 
     val categoryUiState: StateFlow<List<TransactionCategoryEntity>> =
-        transactionCategoryRepo.getAll().stateIn(
+        transactionRepo.getAllCategories().stateIn(
             scope = CoroutineScope(dispatcher),
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = emptyList()
@@ -37,10 +38,9 @@ class AddTransactionViewModel(
             NumpadType.Addition,
             NumpadType.Subtraction,
             NumpadType.Multiplication,
-            NumpadType.Division -> handleOperatorInput(symbol = numpadState.label)
+            NumpadType.Division -> handleOperatorInput(symbol = numpadState.type.symbol)
 
             NumpadType.Number -> handleNumberInput(numpadState.label)
-
             NumpadType.Clear -> handleClear()
         }
     }
@@ -49,115 +49,133 @@ class AddTransactionViewModel(
 // TODO
     }
 
+    /**
+     * Inserts or replaces the operator in the expression.
+     * Ensures no consecutive operators and that we don't start with an operator
+     * unless there's a number to work with.
+     */
     private fun handleOperatorInput(symbol: String) {
-        val currentState = _addTransactionUiState.value
-        val currentExpression = currentState.expression
-        val currentAmount = currentState.transactionAmount
-
-        // Check if the expression ends with an operator
-        val tokens = currentExpression.trim().split(" ")
+        val state = _addTransactionUiState.value
+        val expression = state.expression.trim()
+        val amount = state.amount
+        val tokens = expression.toTokens()
         val lastToken = tokens.lastOrNull()
 
-        if (lastToken != null && isOperator(lastToken)) {
-            return
-        }
+        when {
+            // If there's no expression yet, we must have a number before adding an operator
+            lastToken == null && amount.isNotBlank() -> {
+                val newExpression = "$amount $symbol "
+                updateAddTransactionUiState(
+                    expression = newExpression,
+                    amountStr = amount
+                )
+            }
 
-        val newExpression = if (currentExpression.isEmpty()) {
-            "$currentAmount $symbol "
-        } else {
-            "$currentExpression $symbol "
+            // If the last token is an operator, replace it with the new one
+            lastToken != null && isOperator(lastToken) -> {
+                val newExpression = tokens.dropLast(1).joinToString(" ") + " $symbol "
+                updateAddTransactionUiState(
+                    expression = newExpression,
+                    amountStr = amount
+                )
+            }
+
+            // If the last token is a number, just append the new operator
+            lastToken != null && !isOperator(lastToken) -> {
+                val newExpression = "$expression $symbol "
+                updateAddTransactionUiState(
+                    expression = newExpression,
+                    amountStr = amount
+                )
+            }
         }
-        updateAddTransactionUiState(expression = newExpression, amountStr = currentAmount)
     }
 
+    /**
+     * Appends a number to the current amount and expression.
+     * If we start from "0", we replace it with the new digit.
+     * Also evaluates the expression to update the displayed amount.
+     */
     private fun handleNumberInput(digitStr: String) {
-        val maxValue = 999_999_999_999
+        val state = _addTransactionUiState.value
+        val currentExpression = state.expression
+        val currentAmount = state.amount
 
-        val currentState = _addTransactionUiState.value
-        val currentExpression = currentState.expression
-        val currentAmount = currentState.transactionAmount
-
-        val newAmount = if (currentAmount == "0") {
-            digitStr
-        } else {
-            currentAmount + digitStr
-        }
-
-        if ((newAmount.toLongOrNull() ?: 0) > maxValue) {
-            updateAddTransactionUiState(
-                amountStr = maxValue.toString(),
-            )
-            return
-        }
-
+        // Update the amount: if current is "0", replace it, otherwise append.
+        val newAmount = if (currentAmount == "0") digitStr else currentAmount + digitStr
         val newExpression = if (currentExpression.isEmpty()) {
             newAmount
         } else {
             currentExpression + digitStr
         }
 
-        val result = evaluateExpression(newExpression)
+        val result = newExpression.evaluateExpression()
 
         updateAddTransactionUiState(
-            amountStr = result.toString(),
+            amountStr = result.toLong().toString(),
             expression = newExpression
         )
     }
 
+    /**
+     * Handles the clear action:
+     * - If there's an operator in the expression, we clear everything.
+     * - Otherwise, we remove one character at a time from amount and expression.
+     */
     private fun handleClear() {
-        val currentState = _addTransactionUiState.value
-        val currentExpression = currentState.expression
-        val currentAmount = currentState.transactionAmount
+        val state = _addTransactionUiState.value
+        val currentExpression = state.expression
+        val currentAmount = state.amount
 
-        // clear completely if the expression contains an operator
-        if (currentState.isExpressionContainsAnyOperator()) {
+        if (state.isExpressionContainsAnyOperator()) {
+            // If we have an operator, just reset everything
             updateAddTransactionUiState(
                 amountStr = "0",
                 expression = ""
             )
         } else {
-            val newAmount = if (currentAmount.isNotEmpty()) currentAmount.dropLast(1) else "0"
-            val newExpression =
-                if (currentExpression.isNotEmpty()) currentExpression.dropLast(1) else ""
+            // Otherwise, remove last character
+            val newAmount = currentAmount.dropLastOrDefault("0")
+            val newExpression = currentExpression.dropLastOrDefault("")
 
             updateAddTransactionUiState(
-                amountStr = newAmount.ifEmpty { "0" },
+                amountStr = newAmount,
                 expression = newExpression
             )
         }
     }
 
+    /**
+     * Updates the UI state with new values for amount and/or expression.
+     */
     private fun updateAddTransactionUiState(amountStr: String? = null, expression: String? = null) {
         val current = _addTransactionUiState.value
         _addTransactionUiState.update { state ->
             state.copy(
                 expression = expression ?: current.expression,
-                transactionAmount = amountStr ?: current.transactionAmount
+                amount = amountStr ?: current.amount
             )
         }
     }
 
+    /**
+     * Checks whether the given token is considered an operator.
+     */
     private fun isOperator(token: String): Boolean {
         return token in operators
     }
 
-    private fun evaluateExpression(expression: String): Long {
-        val tokens = expression.split(" ")
-        var result = tokens[0].toLongOrNull() ?: 0
+    /**
+     * Splits an expression string into tokens separated by spaces.
+     */
+    private fun String.toTokens(): List<String> {
+        return trim().split(" ").filter { it.isNotEmpty() }
+    }
 
-        var i = 1
-        while (i < tokens.size) {
-            val op = tokens[i]
-            val nextVal = tokens.getOrNull(i + 1)?.toLongOrNull() ?: 0
-            result = when (op) {
-                "+" -> result + nextVal
-                "-" -> result - nextVal
-                "×" -> result * nextVal
-                "÷" -> if (nextVal != 0L) result / nextVal else 0
-                else -> result
-            }
-            i += 2
-        }
-        return result
+    /**
+     * Drops the last character from a string, or returns the default value if the string is empty.
+     */
+    private fun String.dropLastOrDefault(defaultValue: String): String {
+        return if (isNotEmpty()) dropLast(1).ifEmpty { defaultValue } else defaultValue
     }
 }

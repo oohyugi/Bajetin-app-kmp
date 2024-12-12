@@ -2,13 +2,13 @@ package com.bajetin.app.features.main.presentation.component
 
 import com.bajetin.app.core.utils.Constants.operators
 
-enum class NumpadType {
-    Addition,
-    Subtraction,
-    Multiplication,
-    Division,
-    Number,
-    Clear,
+enum class NumpadType(val symbol: String) {
+    Addition("+"),
+    Subtraction("-"),
+    Multiplication("*"),
+    Division("/"),
+    Number(""),
+    Clear(""),
 }
 
 class NumpadState(
