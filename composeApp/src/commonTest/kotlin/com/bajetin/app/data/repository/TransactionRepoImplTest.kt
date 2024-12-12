@@ -1,7 +1,7 @@
 package com.bajetin.app.data.repository
 
 import com.bajetin.app.data.entity.TransactionCategoryEntity
-import com.bajetin.app.data.local.TransactionCategoryDataSource
+import com.bajetin.app.data.local.TransactionLocalSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -10,29 +10,29 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TransactionCategoryRepoImplTest {
+class TransactionRepoImplTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val dataSource = object : TransactionCategoryDataSource {
+    private val dataSource = object : TransactionLocalSource {
         private val categories = mutableListOf<TransactionCategoryEntity>()
 
-        override suspend fun insert(label: String, emoticon: String?) {
+        override suspend fun insertCategory(label: String, emoticon: String?) {
             categories.add(TransactionCategoryEntity(categories.size.toLong(), emoticon, label))
         }
 
-        override fun getAll(): Flow<List<TransactionCategoryEntity>> {
+        override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> {
             return flowOf(categories)
         }
     }
 
-    private val repo = TransactionCategoryRepoImpl(dataSource)
+    private val repo = TransactionRepoImpl(dataSource)
 
     @Test
     fun `should insert adds a new category`() = runTest(testDispatcher) {
-        repo.insert("Food", "🍔")
+        repo.insertCategory("Food", "🍔")
 
-        val categories = repo.getAll().first()
+        val categories = repo.getAllCategories().first()
 
         // Assert the category is added
         assertEquals(1, categories.size)
@@ -42,10 +42,10 @@ class TransactionCategoryRepoImplTest {
 
     @Test
     fun `should retrieves all categories`() = runTest(testDispatcher) {
-        repo.insert("Food", "🍔")
-        repo.insert("Transport", "🚗")
+        repo.insertCategory("Food", "🍔")
+        repo.insertCategory("Transport", "🚗")
 
-        val categories = repo.getAll().first()
+        val categories = repo.getAllCategories().first()
 
         // Assert all categories are retrieved
         assertEquals(2, categories.size)

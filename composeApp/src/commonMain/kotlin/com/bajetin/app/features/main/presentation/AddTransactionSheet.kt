@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bajetin.app.features.main.presentation.component.NumpadRow
-import com.bajetin.app.core.utils.formatNumberWithDot
+import com.bajetin.app.core.utils.formatToCurrency
 
 @Composable
 fun AddTransactionSheet(
@@ -46,7 +46,7 @@ fun AddTransactionSheet(
         ) {
             Text("Rp.")
             Text(
-                addTransactionUiState.transactionAmount.formatNumberWithDot(),
+                addTransactionUiState.amount.formatToCurrency(),
                 style = MaterialTheme.typography.displayMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Visible

@@ -17,10 +17,10 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class TransactionCategoryDataSourceImplTest : KoinTest {
+class TransactionLocalSourceTest : KoinTest {
     private val testDispatcher = StandardTestDispatcher()
 
-    private val dataSource: TransactionCategoryDataSource by inject()
+    private val dataSource: TransactionLocalSource by inject()
 
     @BeforeTest
     fun setup() {
@@ -37,10 +37,10 @@ class TransactionCategoryDataSourceImplTest : KoinTest {
 
     @Test
     fun `should insert and retrieve categories`() = runTest(testDispatcher) {
-        dataSource.insert("Food", "🍔")
-        dataSource.insert("Transport", "🚗")
+        dataSource.insertCategory("Food", "🍔")
+        dataSource.insertCategory("Transport", "🚗")
 
-        val categories = dataSource.getAll().first()
+        val categories = dataSource.getAllCategories().first()
 
         assertEquals("Food", categories[0].label)
         assertEquals("🍔", categories[0].emoticon)
@@ -50,7 +50,7 @@ class TransactionCategoryDataSourceImplTest : KoinTest {
 
     @Test
     fun `should return default categories`() = runTest(testDispatcher) {
-        val categories = dataSource.getAll().first()
+        val categories = dataSource.getAllCategories().first()
         assertEquals(TransactionCategoryEntity.initialCategories.size, categories.size)
     }
 }
