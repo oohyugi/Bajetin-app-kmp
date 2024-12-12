@@ -24,11 +24,9 @@ ___
 
 ## **Architecture for Bajetin**
 
-# Project Architecture
-
 This document outlines the overall architecture of the project, following a Clean Architecture approach with feature-based organization. The goal is to maintain a clear separation of concerns, improve testability, and ensure the codebase is easy to maintain and scale.
 
-## Layers Overview
+### Layers Overview
 
 A common setup for Clean Architecture involves four main layers, arranged in a hierarchy that dictates dependency direction:
 
@@ -41,9 +39,9 @@ Additionally, a **Navigation** module can be introduced to handle all the naviga
 
 The general rule is that each layer should depend only on the layers below it. No layer should depend on layers above it. This creates a one-way dependency flow, making it easier to change or replace components without breaking the entire codebase.
 
-## Layers Description
+### Layers Description
 
-### UI/Feature Layer
+#### UI/Feature Layer
 - **Responsibility:** Displays information to the user, handles user input, and manages UI state.
 - **Typical Contents:**
    - ViewModels
@@ -53,7 +51,7 @@ The general rule is that each layer should depend only on the layers below it. N
 **Depends On:** The Domain Layer for executing business logic via use cases, and the Navigation module for coordinating navigation.  
 **Does Not Depend On:** Data or Core layers directly.
 
-### Domain Layer
+#### Domain Layer
 - **Responsibility:** Encapsulates the application’s business logic and rules.
 - **Typical Contents:**
    - Entities (plain Kotlin classes representing core data of the domain)
@@ -63,7 +61,7 @@ The general rule is that each layer should depend only on the layers below it. N
 **Depends On:** May use Core utilities for generic functions.  
 **Does Not Depend On:** UI, Data implementations, or Navigation modules directly.
 
-### Data Layer
+#### Data Layer
 - **Responsibility:** Provides concrete implementations of the domain interfaces (e.g., repositories).
 - **Typical Contents:**
    - Repositories that implement the domain’s repository interfaces
@@ -76,7 +74,7 @@ The general rule is that each layer should depend only on the layers below it. N
 
 **Does Not Depend On:** UI Layer or Navigation module
 
-### Core Layer
+#### Core Layer
 - **Responsibility:** Offers generic, reusable utilities and helpers with no app-specific knowledge.
 - **Typical Contents:**
    - Utility classes (e.g., parsers, formatters, extension functions)
@@ -85,7 +83,7 @@ The general rule is that each layer should depend only on the layers below it. N
 **Depends On:** Nothing above.  
 **No Other Layers Depend On:** Not strictly correct—Domain and Data may use Core, but Core doesn’t know about them.
 
-### Navigation
+#### Navigation
 - **Responsibility:** Centralizes navigation logic and directions between features.
 - **Typical Contents:**
    - Navigation graphs or directions
@@ -97,35 +95,36 @@ The general rule is that each layer should depend only on the layers below it. N
 **UI/Feature Layers** depend on Navigation to move between screens. Navigation should avoid depending directly on Domain or Data—its job is just routing.
 
 
-## Feature-Based Structure
+### Feature-Based Structure
 With feature-based organization, each feature might have its own UI, domain, and data:
 
 ```plaintext
-app/
-├─ core/
-│   ├─ utils/
-│   └─ ...
-├─ domain/
-│   ├─ usecase/
-│   ├─ model/
-│   └─ ...
-├─ data/
-│   ├─ repository/
-│   │   └─ ... (implements domain repository)
-│   ├─ local/
-│   │   └─ ... (Room DAOs, local data sources)
-│   ├─ network/
-│   │   └─ ... (API services, remote data sources)
-│   └─ ... (other data implementations)
-|- di/  Dependency injection modules
-├─ features/
-│   └─ ... (features)
-└─ navigation/
-    ├─ NavGraph.kt
-    └─ ... (other navigation logic)
+    app/
+    ├─ core/
+    │   ├─ utils/
+    │   └─ ...
+    ├─ domain/
+    │   ├─ usecase/
+    │   ├─ model/
+    │   └─ ...
+    ├─ data/
+    │   ├─ repository/
+    │   │   └─ ... (implements domain repository)
+    │   ├─ local/
+    │   │   └─ ... (Room DAOs, local data sources)
+    │   ├─ network/
+    │   │   └─ ... (API services, remote data sources)
+    │   └─ ... (other data implementations)
+    |- di/  Dependency injection modules
+    ├─ features/
+    │   └─ ... (features)
+    └─ navigation/
+        ├─ NavGraph.kt
+        └─ ... (other navigation logic)
+ ```
 ---
 
-### **Additional Libraries**
+## **Additional Libraries**
 
 1. **Jetpack Compose Navigation**:
     - Handles navigation between screens in a declarative Compose UI framework.

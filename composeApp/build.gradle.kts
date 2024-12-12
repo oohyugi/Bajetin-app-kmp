@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinxSerialization)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.kover)
 }
 
 kotlin {
@@ -147,6 +148,18 @@ sqldelight {
     databases {
         create("BajetinDatabase") {
             packageName.set("com.bajetin.app.db")
+        }
+    }
+}
+
+kover {
+    reports {
+        verify {
+            rule {
+                bound {
+                    minValue.set(70)
+                }
+            }
         }
     }
 }
