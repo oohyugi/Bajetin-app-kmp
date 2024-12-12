@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AddTransactionState(
     val expression: String = "",
-    val transactionAmount: String = "0",
+    val amount: String = "0",
 ) {
 
     fun isExpressionContainsAnyOperator() = operators.any { expression.contains(it) }

@@ -12,21 +12,22 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-interface TransactionCategoryDataSource {
-    suspend fun insert(label: String, emoticon: String?)
-    fun getAll(): Flow<List<TransactionCategoryEntity>>
+interface TransactionLocalSource {
+    suspend fun insertCategory(label: String, emoticon: String?)
+    fun getAllCategories(): Flow<List<TransactionCategoryEntity>>
 }
 
-class TransactionCategoryDataSourceImpl(
+class TransactionLocalSourceImpl(
     db: BajetinDatabase,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
-) : TransactionCategoryDataSource {
+) : TransactionLocalSource {
 
     private val queries = db.bajetinDatabaseQueries
-    override suspend fun insert(label: String, emoticon: String?) = withContext(ioDispatcher) {
-        queries.insertCategory(label, emoticon = emoticon)
-    }
+    override suspend fun insertCategory(label: String, emoticon: String?) =
+        withContext(ioDispatcher) {
+            queries.insertCategory(label, emoticon = emoticon)
+        }
 
     /**
      * Retrieves all transaction categories as a [Flow] of [List] of [TransactionCategoryEntity].
@@ -34,7 +35,7 @@ class TransactionCategoryDataSourceImpl(
      * Uses `asFlow()` to observe real-time updates from the database.
      * @return A [Flow] emitting a list of transaction categories.
      */
-    override fun getAll(): Flow<List<TransactionCategoryEntity>> {
+    override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> {
         return queries.selectAllCategories()
             .asFlow()
             .mapToList(ioDispatcher)
@@ -66,7 +67,7 @@ class TransactionCategoryDataSourceImpl(
 
     private suspend fun insertDefaultCategories() {
         TransactionCategoryEntity.initialCategories.forEach {
-            insert(it.label, it.emoticon)
+            insertCategory(it.label, it.emoticon)
         }
     }
 }

@@ -24,52 +24,105 @@ ___
 
 ## **Architecture for Bajetin**
 
-Bajetin is built with a Hybrid Architecture, combining:
-- **Feature-based modularity**: Each feature, such as "Transaction History" or "Budget Management," is self-contained.
-- **Shared logic and components**: Shared utilities, themes, and data models ensure consistency and reduce duplication.
-- **MVVM (Model-View-ViewModel)**: The app follows the MVVM architectural pattern
+# Project Architecture
 
-### Directory Structure
-```
+This document outlines the overall architecture of the project, following a Clean Architecture approach with feature-based organization. The goal is to maintain a clear separation of concerns, improve testability, and ensure the codebase is easy to maintain and scale.
+
+## Layers Overview
+
+A common setup for Clean Architecture involves four main layers, arranged in a hierarchy that dictates dependency direction:
+
+1. **UI/Feature Layer**
+2. **Domain Layer**
+3. **Data Layer**
+4. **Core Layer**
+
+Additionally, a **Navigation** module can be introduced to handle all the navigation logic between features without tying it to a specific layer.
+
+The general rule is that each layer should depend only on the layers below it. No layer should depend on layers above it. This creates a one-way dependency flow, making it easier to change or replace components without breaking the entire codebase.
+
+## Layers Description
+
+### UI/Feature Layer
+- **Responsibility:** Displays information to the user, handles user input, and manages UI state.
+- **Typical Contents:**
+   - ViewModels
+   - Activities/Fragments/Composables (or other UI components)
+   - Feature-specific navigation calls (invoking the Navigation module)
+
+**Depends On:** The Domain Layer for executing business logic via use cases, and the Navigation module for coordinating navigation.  
+**Does Not Depend On:** Data or Core layers directly.
+
+### Domain Layer
+- **Responsibility:** Encapsulates the application’s business logic and rules.
+- **Typical Contents:**
+   - Entities (plain Kotlin classes representing core data of the domain)
+   - Use Cases (interactors) defining the operations the app performs
+   - Interfaces (e.g., repositories) describing contracts for data retrieval or other operations
+
+**Depends On:** May use Core utilities for generic functions.  
+**Does Not Depend On:** UI, Data implementations, or Navigation modules directly.
+
+### Data Layer
+- **Responsibility:** Provides concrete implementations of the domain interfaces (e.g., repositories).
+- **Typical Contents:**
+   - Repositories that implement the domain’s repository interfaces
+   - Data sources (local database, network services, etc.)
+   - Mappers and adapters converting data between domain entities and data transfer objects
+
+**Depends On:**
+- Domain Layer (for the interfaces it implements)
+- Core Layer (for shared utilities, if needed)
+
+**Does Not Depend On:** UI Layer or Navigation module
+
+### Core Layer
+- **Responsibility:** Offers generic, reusable utilities and helpers with no app-specific knowledge.
+- **Typical Contents:**
+   - Utility classes (e.g., parsers, formatters, extension functions)
+   - Helpers that do not contain business logic or refer to domain models
+
+**Depends On:** Nothing above.  
+**No Other Layers Depend On:** Not strictly correct—Domain and Data may use Core, but Core doesn’t know about them.
+
+### Navigation
+- **Responsibility:** Centralizes navigation logic and directions between features.
+- **Typical Contents:**
+   - Navigation graphs or directions
+   - Route definitions for each feature
+   - Interfaces or classes that handle cross-feature navigation logic
+
+**Depends On:** Usually, Navigation might know about feature modules’ entry points but tries to remain as independent as possible. Ideally, it should not depend on Domain or Data. It might be a separate module at the same level as UI/Feature modules or even top-level if it orchestrates navigation.
+
+**UI/Feature Layers** depend on Navigation to move between screens. Navigation should avoid depending directly on Domain or Data—its job is just routing.
+
+
+## Feature-Based Structure
+With feature-based organization, each feature might have its own UI, domain, and data:
+
+```plaintext
 app/
-|- core/                     # Shared business logic and utilities
-|   |- domain/               # Shared use cases and entities
-|   |- utils/                # Shared utilities
-|- data/                     # Shared/global data layer
-|   |- repository/           # Shared repositories used across features
-|   |- local/                # Shared local data sources
-|   |- remote/               # Shared remote data sources (e.g., APIs)
-|   |- model/                # Shared models used across features
-|- di/                       # Dependency injection modules
-|- features/                 # Feature-specific implementation
-|   |- feature_name/         # Replace 'feature_name' with actual features
-|       |- data/             # Feature-specific data layer
-|       |- domain/           # Use cases and business logic for the feature
-|       |- presentation/     # UI components (ViewModel, Composables)
-|- navigation/               # Navigation and routing logic
-|- ui/                       # Shared UI components and themes
-|   |- theme/                # Colors, typography, shapes, and app-wide themes
-|   |- components/           # Reusable UI components
-```
-
-### Core Folder
-The `core` folder contains shared logic that can be used across features:
-- **`domain/`**: Contains reusable use cases and entities that encapsulate business logic.
-- **`utils/`**: Contains utility classes, helpers, or extensions.
-
-### Data Folder
-The `data` folder contains:
-- **`repository/`**: Centralized repositories managing data from different sources (local or remote).
-- **`local/`**: Handles database-related operations (e.g., DAO for Room).
-- **`remote/`**: Manages API calls or network interactions.
-- **`model/`**: Shared data models used across the application.
-
-### Features Folder
-Each feature has its own modular folder, containing:
-- **`data/`**: Feature-specific data.
-- **`domain/`**: Feature-specific use cases and entity.
-- **`presentation/`**: UI-related components like ViewModels and Screen.
-
+├─ core/
+│   ├─ utils/
+│   └─ ...
+├─ domain/
+│   ├─ usecase/
+│   ├─ model/
+│   └─ ...
+├─ data/
+│   ├─ repository/
+│   │   └─ ... (implements domain repository)
+│   ├─ local/
+│   │   └─ ... (Room DAOs, local data sources)
+│   ├─ network/
+│   │   └─ ... (API services, remote data sources)
+│   └─ ... (other data implementations)
+|- di/  Dependency injection modules
+├─ features/
+│   └─ ... (features)
+└─ navigation/
+    ├─ NavGraph.kt
+    └─ ... (other navigation logic)
 ---
 
 ### **Additional Libraries**
