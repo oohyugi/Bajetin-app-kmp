@@ -18,6 +18,8 @@ class TransactionRepoImplTest {
     private val dataSource = object : TransactionLocalSource {
         private val categories = mutableListOf<TransactionCategoryEntity>()
 
+        private val transactions = mutableListOf<TransactionEntity>()
+
         override suspend fun insertCategory(label: String, emoticon: String?) {
             categories.add(TransactionCategoryEntity(categories.size.toLong(), emoticon, label))
         }
@@ -31,10 +33,20 @@ class TransactionRepoImplTest {
             amount: Long,
             dateMillis: Long,
             notes: String
-        ) = Unit
+        ) {
+            transactions.add(
+                TransactionEntity(
+                    id = transactions.size.toLong(),
+                    category = categories.find { category -> category.id == catId },
+                    amount = amount,
+                    updatedAt = dateMillis,
+                    notes = notes
+                )
+            )
+        }
 
         override fun getAllTransactions(): Flow<List<TransactionEntity>> {
-            return flowOf(emptyList())
+            return flowOf(transactions)
         }
     }
 
@@ -65,5 +77,19 @@ class TransactionRepoImplTest {
         assertEquals("🍔", categories[0].emoticon)
         assertEquals("Transport", categories[1].label)
         assertEquals("🚗", categories[1].emoticon)
+    }
+
+    @Test
+    fun `should insert adds a new transactions`() = runTest(testDispatcher) {
+        repo.insertCategory("Transport", "🚗")
+        repo.insertTransaction(0, amount = "10000", 1625072400000L, notes = "Kantor")
+
+        val transactions = repo.getAllTransactions().first()
+
+        assertEquals(1, transactions.size)
+        assertEquals(10000, transactions[0].amount)
+        assertEquals("Kantor", transactions[0].notes)
+        assertEquals(1625072400000L, transactions[0].updatedAt)
+        assertEquals("Transport", transactions[0].category?.label)
     }
 }

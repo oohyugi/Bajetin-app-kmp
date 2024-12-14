@@ -3,12 +3,14 @@ package com.bajetin.app.features.main.presentation
 import app.cash.turbine.test
 import com.bajetin.app.core.TestCoroutineDispatcherProvider
 import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.koin.test.KoinTest
 import kotlin.test.Test
@@ -177,5 +179,9 @@ class TransactionRepoFake(
         notes: String
     ) {
         insertTransactionFake?.invoke(catId, amount, dateMillis, notes)
+    }
+
+    override fun getAllTransactions(): Flow<List<TransactionEntity>> {
+       return  flowOf()
     }
 }

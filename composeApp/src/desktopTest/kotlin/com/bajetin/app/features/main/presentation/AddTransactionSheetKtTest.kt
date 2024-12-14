@@ -10,10 +10,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.testing.TestLifecycleOwner
 import com.bajetin.app.core.TestCoroutineDispatcherProvider
-import com.bajetin.app.data.entity.TransactionCategoryEntity
-import com.bajetin.app.domain.repository.TransactionRepo
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 
@@ -30,22 +26,7 @@ class AddTransactionSheetKtTest {
             ) {
                 AddTransactionSheet(
                     viewModel = AddTransactionViewModel(
-                        transactionRepo = object :
-                            TransactionRepo {
-                            override suspend fun insertCategory(label: String, emoticon: String?) =
-                                Unit
-
-                            override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> {
-                                return flowOf()
-                            }
-
-                            override suspend fun insertTransaction(
-                                catId: Long?,
-                                amount: String,
-                                dateMillis: Long?,
-                                notes: String
-                            ) = Unit
-                        },
+                        transactionRepo = TransactionRepoFake(),
                         TestCoroutineDispatcherProvider()
                     ),
 

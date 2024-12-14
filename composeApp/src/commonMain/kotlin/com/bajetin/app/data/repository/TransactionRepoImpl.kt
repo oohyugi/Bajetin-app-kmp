@@ -1,6 +1,7 @@
 package com.bajetin.app.data.repository
 
 import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.data.local.TransactionLocalSource
 import com.bajetin.app.domain.repository.TransactionRepo
 import kotlinx.coroutines.flow.Flow
@@ -30,4 +31,7 @@ class TransactionRepoImpl(
             notes
         )
     }
+
+    override fun getAllTransactions(): Flow<List<TransactionEntity>> =
+        localSource.getAllTransactions()
 }
