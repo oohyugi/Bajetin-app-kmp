@@ -76,8 +76,7 @@ kotlin {
         }
 
         commonTest.dependencies {
-            implementation(kotlin("test"))
-
+            implementation(libs.kotlin.test)
             implementation(libs.bundles.shared.commonTest)
 
             @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
@@ -131,11 +130,7 @@ android {
 }
 
 dependencies {
-    testImplementation(libs.junit)
     debugImplementation(compose.uiTooling)
-
-    androidTestImplementation(libs.androidx.compose.test.junit)
-    debugImplementation(libs.androidx.compose.test.manifest)
 }
 
 compose.desktop {
