@@ -31,13 +31,22 @@ class AddTransactionSheetKtTest {
                     viewModel = AddTransactionViewModel(
                         transactionRepo = object :
                             TransactionRepo {
-                            override suspend fun insertCategory(label: String, emoticon: String?) = Unit
+                            override suspend fun insertCategory(label: String, emoticon: String?) =
+                                Unit
 
                             override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> {
                                 return flowOf()
                             }
+
+                            override suspend fun insertTransaction(
+                                catId: Long?,
+                                amount: String,
+                                dateMillis: Long?,
+                                notes: String
+                            ) = Unit
                         }
-                    )
+                    ),
+                    onEventLaunch = {},
                 )
             }
         }
