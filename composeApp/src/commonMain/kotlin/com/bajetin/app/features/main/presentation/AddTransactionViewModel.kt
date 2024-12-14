@@ -1,8 +1,10 @@
 package com.bajetin.app.features.main.presentation
 
 import androidx.lifecycle.ViewModel
-import com.bajetin.app.core.utils.Constants.operators
+import androidx.lifecycle.viewModelScope
+import com.bajetin.app.core.utils.containsOperators
 import com.bajetin.app.core.utils.evaluateExpression
+import com.bajetin.app.core.utils.isOperator
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
@@ -10,12 +12,15 @@ import com.bajetin.app.features.main.presentation.component.NumpadType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class AddTransactionViewModel(
     private val transactionRepo: TransactionRepo,
@@ -33,6 +38,9 @@ class AddTransactionViewModel(
             initialValue = emptyList()
         )
 
+    private var _uiEvent = MutableSharedFlow<AddTransactionUiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
+
     fun onKeyPress(numpadState: NumpadState) {
         when (numpadState.type) {
             NumpadType.Addition,
@@ -45,8 +53,47 @@ class AddTransactionViewModel(
         }
     }
 
-    fun onClickDone() {
-// TODO
+    fun onClickSave() {
+        viewModelScope.launch {
+            with(_addTransactionUiState.value) {
+                if (categorySelected == null) {
+                    _uiEvent.emit(AddTransactionUiEvent.ShowSnackbar("Select category first"))
+                    return@launch
+                }
+                transactionRepo.insertTransaction(
+                    catId = categorySelected.id,
+                    amount = amount,
+                    dateMillis = dateMillis,
+                    notes = notes
+                )
+                _uiEvent.emit(AddTransactionUiEvent.HideSheet)
+                _addTransactionUiState.value = AddTransactionState() // reset
+            }
+        }
+    }
+
+    fun onSelectedDate(selectedDateMillis: Long?) {
+        _addTransactionUiState.update {
+            it.copy(dateMillis = selectedDateMillis)
+        }
+    }
+
+    fun selectCategory(category: TransactionCategoryEntity) {
+        _addTransactionUiState.update {
+            it.copy(categorySelected = category)
+        }
+    }
+
+    fun addNotes(notes: String) {
+        _addTransactionUiState.update {
+            it.copy(notes = notes)
+        }
+    }
+
+    fun onClickDatePicker() {
+        viewModelScope.launch {
+            _uiEvent.emit(AddTransactionUiEvent.ShowDatePicker)
+        }
     }
 
     /**
@@ -72,7 +119,7 @@ class AddTransactionViewModel(
             }
 
             // If the last token is an operator, replace it with the new one
-            lastToken != null && isOperator(lastToken) -> {
+            lastToken != null && lastToken.isOperator() -> {
                 val newExpression = tokens.dropLast(1).joinToString(" ") + " $symbol "
                 updateAddTransactionUiState(
                     expression = newExpression,
@@ -81,7 +128,7 @@ class AddTransactionViewModel(
             }
 
             // If the last token is a number, just append the new operator
-            lastToken != null && !isOperator(lastToken) -> {
+            lastToken != null && !lastToken.isOperator() -> {
                 val newExpression = "$expression $symbol "
                 updateAddTransactionUiState(
                     expression = newExpression,
@@ -109,11 +156,16 @@ class AddTransactionViewModel(
             currentExpression + digitStr
         }
 
+        if (newAmount.length > 12) {
+            return
+        }
+
         val result = newExpression.evaluateExpression()
 
         updateAddTransactionUiState(
             amountStr = result.toLong().toString(),
-            expression = newExpression
+            expression = newExpression,
+            isAmountCleared = false
         )
     }
 
@@ -127,11 +179,12 @@ class AddTransactionViewModel(
         val currentExpression = state.expression
         val currentAmount = state.amount
 
-        if (state.isExpressionContainsAnyOperator()) {
+        if (currentExpression.containsOperators()) {
             // If we have an operator, just reset everything
             updateAddTransactionUiState(
                 amountStr = "0",
-                expression = ""
+                expression = "",
+                isAmountCleared = true
             )
         } else {
             // Otherwise, remove last character
@@ -140,7 +193,8 @@ class AddTransactionViewModel(
 
             updateAddTransactionUiState(
                 amountStr = newAmount,
-                expression = newExpression
+                expression = newExpression,
+                isAmountCleared = true
             )
         }
     }
@@ -148,21 +202,19 @@ class AddTransactionViewModel(
     /**
      * Updates the UI state with new values for amount and/or expression.
      */
-    private fun updateAddTransactionUiState(amountStr: String? = null, expression: String? = null) {
+    private fun updateAddTransactionUiState(
+        amountStr: String? = null,
+        expression: String? = null,
+        isAmountCleared: Boolean? = null
+    ) {
         val current = _addTransactionUiState.value
         _addTransactionUiState.update { state ->
             state.copy(
                 expression = expression ?: current.expression,
-                amount = amountStr ?: current.amount
+                amount = amountStr ?: current.amount,
+                isAmountCleared = isAmountCleared ?: current.isAmountCleared
             )
         }
-    }
-
-    /**
-     * Checks whether the given token is considered an operator.
-     */
-    private fun isOperator(token: String): Boolean {
-        return token in operators
     }
 
     /**

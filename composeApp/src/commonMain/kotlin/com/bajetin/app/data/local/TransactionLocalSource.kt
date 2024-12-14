@@ -15,6 +15,8 @@ import kotlinx.coroutines.withContext
 interface TransactionLocalSource {
     suspend fun insertCategory(label: String, emoticon: String?)
     fun getAllCategories(): Flow<List<TransactionCategoryEntity>>
+
+    suspend fun insertTransaction(catId: Long, amount: Long, dateMillis: Long, notes: String)
 }
 
 class TransactionLocalSourceImpl(
@@ -43,6 +45,18 @@ class TransactionLocalSourceImpl(
                 handleCategoriesResult(categories)
             }
     }
+
+    override suspend fun insertTransaction(catId: Long, amount: Long, dateMillis: Long, notes: String) =
+        withContext(ioDispatcher) {
+            queries.insertTransaction(
+                note = notes,
+                amount = amount,
+                category_id = catId,
+                type = "expense",
+                updated_at = dateMillis,
+                created_at = dateMillis,
+            )
+        }
 
     private suspend fun handleCategoriesResult(
         categories: List<Categories>

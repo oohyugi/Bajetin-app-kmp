@@ -7,16 +7,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.unit.dp
 import bajetin.composeapp.generated.resources.Res
 import bajetin.composeapp.generated.resources.ic_add
-import com.bajetin.app.ui.theme.DarkPrimaryColor
 import com.bajetin.app.navigation.BottomNavItem
 import org.jetbrains.compose.resources.painterResource
 
@@ -61,11 +57,6 @@ fun NavRailBar(
                     },
                     alwaysShowLabel = true,
                     selected = isSelected,
-                    colors = NavigationRailItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        unselectedIconColor = Gray,
-                        indicatorColor = DarkPrimaryColor
-                    ),
                     onClick = { onNavBarClick(item) }
                 )
             }

@@ -11,12 +11,9 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.unit.dp
 import bajetin.composeapp.generated.resources.Res
 import bajetin.composeapp.generated.resources.ic_add
-import com.bajetin.app.ui.theme.DarkPrimaryColor
 import com.bajetin.app.navigation.BottomNavItem
 import org.jetbrains.compose.resources.painterResource
 
@@ -61,9 +58,8 @@ fun BottomNavBar(
                     },
                     alwaysShowLabel = true,
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.White,
-                        unselectedIconColor = Gray,
-                        indicatorColor = DarkPrimaryColor
+                        unselectedIconColor = MaterialTheme.colorScheme.outline,
+                        indicatorColor = MaterialTheme.colorScheme.surfaceContainerHigh
                     ),
                     selected = isSelected,
                     onClick = { onNavBarClick(item) }

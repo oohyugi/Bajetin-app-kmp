@@ -5,13 +5,16 @@ import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.koin.test.KoinTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class AddTransactionViewModelTest : KoinTest {
 
     private val viewModel =
@@ -71,11 +74,66 @@ class AddTransactionViewModelTest : KoinTest {
             )
         }
     }
+
+    @Test
+    fun `onClickSave inserts transaction when state is valid`() = runTest {
+        var isInsert = false
+        val viewModel = AddTransactionViewModel(
+            TransactionRepoFake(
+                categories = TransactionCategoryEntity.initialCategories,
+                insertTransactionFake = { _, _, _, _ ->
+                    isInsert = true
+                }
+            ),
+        )
+        val category = TransactionCategoryEntity(label = "Food", emoticon = "🍔")
+        viewModel.selectCategory(category)
+        viewModel.onKeyPress(NumpadState("1", NumpadType.Number))
+        viewModel.onKeyPress(NumpadState("0", NumpadType.Number))
+        viewModel.onSelectedDate(171434)
+        viewModel.addNotes("Beli ayam geprek")
+
+        viewModel.onClickSave()
+        advanceUntilIdle()
+
+        assertEquals(isInsert, true)
+    }
+
+    @Test
+    fun `onSelectedDate updates dateMillis correctly`() = runTest {
+        val selectedDate = 1625072400000L
+
+        viewModel.onSelectedDate(selectedDate)
+
+        val uiState = viewModel.addTransactionUiState.value
+        assertEquals(uiState.dateMillis, selectedDate)
+    }
+
+    @Test
+    fun `selectCategory updates categorySelected correctly`() = runTest {
+        val category = TransactionCategoryEntity(label = "Food", emoticon = "🍔")
+
+        viewModel.selectCategory(category)
+
+        val uiState = viewModel.addTransactionUiState.value
+        assertEquals(uiState.categorySelected, category)
+    }
+
+    @Test
+    fun `addNotes updates notes correctly`() = runTest {
+        val notes = "Beli garam"
+
+        viewModel.addNotes(notes)
+
+        val uiState = viewModel.addTransactionUiState.value
+        assertEquals(uiState.notes, notes)
+    }
 }
 
 class TransactionRepoFake(
     val insertCategoryFake: ((String, String?) -> Unit)? = null,
-    val categories: List<TransactionCategoryEntity> = emptyList()
+    val categories: List<TransactionCategoryEntity> = emptyList(),
+    val insertTransactionFake: ((catId: Long?, amount: String, dateMillis: Long?, notes: String) -> Unit)? = null,
 ) : TransactionRepo {
     private val categoryFlow = MutableStateFlow(categories)
 
@@ -84,4 +142,12 @@ class TransactionRepoFake(
     }
 
     override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> = categoryFlow
+    override suspend fun insertTransaction(
+        catId: Long?,
+        amount: String,
+        dateMillis: Long?,
+        notes: String
+    ) {
+        insertTransactionFake?.invoke(catId, amount, dateMillis, notes)
+    }
 }
