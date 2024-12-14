@@ -182,6 +182,6 @@ class TransactionRepoFake(
     }
 
     override fun getAllTransactions(): Flow<List<TransactionEntity>> {
-       return  flowOf()
+        return flowOf()
     }
 }
