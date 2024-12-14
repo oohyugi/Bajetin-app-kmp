@@ -102,7 +102,7 @@ fun MainScreen() {
 
                         is AddTransactionUiEvent.ShowSnackbar -> {
                             scope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(event.meesage)
+                                scaffoldState.snackbarHostState.showSnackbar(event.message)
                             }
                         }
                     }

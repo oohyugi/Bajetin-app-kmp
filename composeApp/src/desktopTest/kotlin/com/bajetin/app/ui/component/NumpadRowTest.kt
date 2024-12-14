@@ -1,4 +1,4 @@
-package com.bajetin.app.core.ui.component
+package com.bajetin.app.ui.component
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
