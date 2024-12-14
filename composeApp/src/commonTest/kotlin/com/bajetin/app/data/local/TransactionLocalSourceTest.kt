@@ -53,4 +53,16 @@ class TransactionLocalSourceTest : KoinTest {
         val categories = dataSource.getAllCategories().first()
         assertEquals(TransactionCategoryEntity.initialCategories.size, categories.size)
     }
+
+    @Test
+    fun `should insert and retrieve transactions`() = runTest(testDispatcher) {
+        dataSource.insertTransaction(1, 1000, 1625072400000L, "Kantor")
+
+        val transactions = dataSource.getAllTransactions().first()
+
+        assertEquals(1000, transactions[0].amount)
+        assertEquals(1625072400000L, transactions[0].updatedAt)
+        assertEquals("Kantor", transactions[0].notes)
+        assertEquals("Transport", transactions[0].category?.label)
+    }
 }

@@ -3,12 +3,14 @@ package com.bajetin.app.data.local
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.db.BajetinDatabase
 import com.bajetin.app.db.Categories
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -17,6 +19,7 @@ interface TransactionLocalSource {
     fun getAllCategories(): Flow<List<TransactionCategoryEntity>>
 
     suspend fun insertTransaction(catId: Long, amount: Long, dateMillis: Long, notes: String)
+    fun getAllTransactions(): Flow<List<TransactionEntity>>
 }
 
 class TransactionLocalSourceImpl(
@@ -46,7 +49,12 @@ class TransactionLocalSourceImpl(
             }
     }
 
-    override suspend fun insertTransaction(catId: Long, amount: Long, dateMillis: Long, notes: String) =
+    override suspend fun insertTransaction(
+        catId: Long,
+        amount: Long,
+        dateMillis: Long,
+        notes: String
+    ) =
         withContext(ioDispatcher) {
             queries.insertTransaction(
                 note = notes,
@@ -57,6 +65,21 @@ class TransactionLocalSourceImpl(
                 created_at = dateMillis,
             )
         }
+
+    override fun getAllTransactions(): Flow<List<TransactionEntity>> {
+        return queries.selectAllTransaction().asFlow().mapToList(ioDispatcher).map { transactions ->
+            val categories = getAllCategories().first()
+            transactions.map { transaction ->
+                TransactionEntity(
+                    id = transaction.id,
+                    category = categories.find { category -> category.id == transaction.category_id },
+                    updatedAt = transaction.updated_at,
+                    amount = transaction.amount ?: 0,
+                    notes = transaction.note
+                )
+            }
+        }
+    }
 
     private suspend fun handleCategoriesResult(
         categories: List<Categories>

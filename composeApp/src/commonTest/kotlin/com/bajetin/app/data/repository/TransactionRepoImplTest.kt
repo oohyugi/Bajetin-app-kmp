@@ -1,6 +1,7 @@
 package com.bajetin.app.data.repository
 
 import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.data.local.TransactionLocalSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -31,6 +32,10 @@ class TransactionRepoImplTest {
             dateMillis: Long,
             notes: String
         ) = Unit
+
+        override fun getAllTransactions(): Flow<List<TransactionEntity>> {
+            return flowOf(emptyList())
+        }
     }
 
     private val repo = TransactionRepoImpl(dataSource)
