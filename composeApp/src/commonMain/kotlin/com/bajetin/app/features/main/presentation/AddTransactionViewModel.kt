@@ -27,8 +27,7 @@ class AddTransactionViewModel(
     private val transactionRepo: TransactionRepo,
     private val coroutineDispatcher: CoroutineDispatcherProvider,
     mainDispatcher: CoroutineDispatcher = Dispatchers.Default,
-) :
-    ViewModel() {
+) : ViewModel() {
 
     private var _addTransactionUiState = MutableStateFlow(AddTransactionState())
     val addTransactionUiState = _addTransactionUiState.asStateFlow()
