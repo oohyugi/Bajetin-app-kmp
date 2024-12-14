@@ -1,24 +1,29 @@
 package com.bajetin.app.features.main.presentation
 
 import app.cash.turbine.test
+import com.bajetin.app.core.TestCoroutineDispatcherProvider
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.koin.test.KoinTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class AddTransactionViewModelTest : KoinTest {
 
+    private val dispatcherProvider = TestCoroutineDispatcherProvider()
+
     private val viewModel =
-        AddTransactionViewModel(transactionRepo = TransactionRepoFake())
+        AddTransactionViewModel(
+            transactionRepo = TransactionRepoFake(),
+            coroutineDispatcher = dispatcherProvider
+        )
 
     @Test
     fun `onKeyPress with operator appends to expression`() = runTest {
@@ -64,6 +69,7 @@ class AddTransactionViewModelTest : KoinTest {
             TransactionRepoFake(
                 categories = TransactionCategoryEntity.initialCategories,
             ),
+            dispatcherProvider
         )
 
         viewModel.categoryUiState.test {
@@ -76,27 +82,49 @@ class AddTransactionViewModelTest : KoinTest {
     }
 
     @Test
-    fun `onClickSave inserts transaction when state is valid`() = runTest {
-        var isInsert = false
+    fun `onClickSave inserts transaction and emits HideSheet when state is valid`() = runTest {
+        val category = TransactionCategoryEntity(label = "Food", emoticon = "🍔")
+
         val viewModel = AddTransactionViewModel(
             TransactionRepoFake(
                 categories = TransactionCategoryEntity.initialCategories,
-                insertTransactionFake = { _, _, _, _ ->
-                    isInsert = true
+                insertTransactionFake = { catId, amount, dateMillis, notes ->
+                    assertEquals(category.id, catId)
+                    assertEquals("10", amount)
+                    assertEquals(1625072400000L, dateMillis)
+                    assertEquals("Beli ayam geprek", notes)
                 }
             ),
+            dispatcherProvider
         )
-        val category = TransactionCategoryEntity(label = "Food", emoticon = "🍔")
+
         viewModel.selectCategory(category)
         viewModel.onKeyPress(NumpadState("1", NumpadType.Number))
         viewModel.onKeyPress(NumpadState("0", NumpadType.Number))
-        viewModel.onSelectedDate(171434)
+        viewModel.onSelectedDate(1625072400000L)
         viewModel.addNotes("Beli ayam geprek")
 
-        viewModel.onClickSave()
-        advanceUntilIdle()
+        // if using shared flow emitting value must be under test
+        // https://github.com/cashapp/turbine?tab=readme-ov-file#order-of-execution--shared-flows
+        viewModel.uiEvent.test {
+            viewModel.onClickSave()
+            assertTrue(awaitItem() is AddTransactionUiEvent.HideSheet)
+        }
 
-        assertEquals(isInsert, true)
+        val uiState = viewModel.addTransactionUiState.first()
+        assertEquals(AddTransactionState(), uiState)
+    }
+
+    @Test
+    fun `onClickSave emits ShowSnackbar when categorySelected is null`() = runTest {
+        viewModel.uiEvent.test {
+            viewModel.onClickSave()
+            val event = awaitItem()
+            assertTrue(event is AddTransactionUiEvent.ShowSnackbar)
+            val snackbarEvent = event as AddTransactionUiEvent.ShowSnackbar
+            assertEquals("Select category first", snackbarEvent.message)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test

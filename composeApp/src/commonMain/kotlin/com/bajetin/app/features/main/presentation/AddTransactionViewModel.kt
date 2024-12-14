@@ -6,6 +6,7 @@ import com.bajetin.app.core.utils.containsOperators
 import com.bajetin.app.core.utils.evaluateExpression
 import com.bajetin.app.core.utils.isOperator
 import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.domain.CoroutineDispatcherProvider
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
@@ -24,7 +25,8 @@ import kotlinx.coroutines.launch
 
 class AddTransactionViewModel(
     private val transactionRepo: TransactionRepo,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    private val coroutineDispatcher: CoroutineDispatcherProvider,
+    mainDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) :
     ViewModel() {
 
@@ -33,7 +35,7 @@ class AddTransactionViewModel(
 
     val categoryUiState: StateFlow<List<TransactionCategoryEntity>> =
         transactionRepo.getAllCategories().stateIn(
-            scope = CoroutineScope(dispatcher),
+            scope = CoroutineScope(mainDispatcher),
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = emptyList()
         )
@@ -54,7 +56,7 @@ class AddTransactionViewModel(
     }
 
     fun onClickSave() {
-        viewModelScope.launch {
+        viewModelScope.launch(coroutineDispatcher.main) {
             with(_addTransactionUiState.value) {
                 if (categorySelected == null) {
                     _uiEvent.emit(AddTransactionUiEvent.ShowSnackbar("Select category first"))
@@ -66,6 +68,7 @@ class AddTransactionViewModel(
                     dateMillis = dateMillis,
                     notes = notes
                 )
+
                 _uiEvent.emit(AddTransactionUiEvent.HideSheet)
                 _addTransactionUiState.value = AddTransactionState() // reset
             }
