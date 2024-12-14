@@ -24,6 +24,13 @@ class TransactionRepoImplTest {
         override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> {
             return flowOf(categories)
         }
+
+        override suspend fun insertTransaction(
+            catId: Long,
+            amount: Long,
+            dateMillis: Long,
+            notes: String
+        ) = Unit
     }
 
     private val repo = TransactionRepoImpl(dataSource)

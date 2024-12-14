@@ -14,4 +14,20 @@ class TransactionRepoImpl(
 
     override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> =
         localSource.getAllCategories()
+
+    override suspend fun insertTransaction(
+        catId: Long?,
+        amount: String,
+        dateMillis: Long?,
+        notes: String
+    ) {
+        if (catId == null) return
+
+        localSource.insertTransaction(
+            catId,
+            amount = amount.toLongOrNull() ?: 0,
+            dateMillis = dateMillis ?: 0,
+            notes
+        )
+    }
 }

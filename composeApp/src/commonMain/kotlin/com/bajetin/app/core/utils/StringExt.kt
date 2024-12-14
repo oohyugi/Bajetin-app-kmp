@@ -21,3 +21,12 @@ fun String.evaluateExpression(): Double {
     val parser = ExpressionParser(this)
     return parser.parse()
 }
+
+private val operators = listOf("+", "-", "*", "/")
+fun String.containsOperators(): Boolean {
+    return operators.any { this.contains(it) }
+}
+
+fun String.isOperator(): Boolean {
+    return this in operators
+}

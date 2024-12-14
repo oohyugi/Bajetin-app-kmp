@@ -6,11 +6,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,22 +27,24 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.bajetin.app.ui.component.BottomNavBar
-import com.bajetin.app.ui.component.NavRailBar
 import com.bajetin.app.core.utils.ScreenSize
 import com.bajetin.app.navigation.BottomNavItem
 import com.bajetin.app.navigation.NavigationHost
+import com.bajetin.app.ui.component.BottomNavBar
+import com.bajetin.app.ui.component.NavRailBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.annotation.KoinExperimentalAPI
 
-@OptIn(ExperimentalMaterial3Api::class, KoinExperimentalAPI::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val navHostController = rememberNavController()
     val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    )
     var screenSize by remember { mutableStateOf(ScreenSize.COMPACT) }
 
     val topLevelDestinations = listOf(
@@ -53,6 +61,23 @@ fun MainScreen() {
 
     val addTransactionViewModel = koinViewModel<AddTransactionViewModel>()
 
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds()
+    )
+    val datePickerSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showDatePickerSheet by remember { mutableStateOf(false) }
+    var selectedDate: Long? = null
+
+    // close date picker
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        if (selectedDate != datePickerState.selectedDateMillis && showDatePickerSheet) {
+            showDatePickerSheet = false
+            addTransactionViewModel.onSelectedDate(datePickerState.selectedDateMillis)
+            datePickerSheetState.hide()
+        }
+        selectedDate = datePickerState.selectedDateMillis
+    }
+
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetPeekHeight = 0.dp,
@@ -61,7 +86,27 @@ fun MainScreen() {
         sheetContent = {
             AddTransactionSheet(
                 modifier = Modifier.fillMaxWidth(),
-                viewModel = addTransactionViewModel
+                viewModel = addTransactionViewModel,
+                onEventLaunch = { event ->
+                    when (event) {
+                        AddTransactionUiEvent.HideSheet -> {
+                            scope.launch {
+                                scaffoldState.bottomSheetState.hide()
+                            }
+                        }
+
+                        AddTransactionUiEvent.ShowDatePicker -> {
+                            showDatePickerSheet = true
+                            scope.launch { datePickerSheetState.expand() }
+                        }
+
+                        is AddTransactionUiEvent.ShowSnackbar -> {
+                            scope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(event.meesage)
+                            }
+                        }
+                    }
+                },
             )
         },
     ) {
@@ -105,6 +150,24 @@ fun MainScreen() {
                     NavigationHost(
                         navHostController = navHostController,
                     )
+                }
+
+                // Bottom sheet date picker
+                if (showDatePickerSheet) {
+                    ModalBottomSheet(
+                        sheetState = datePickerSheetState,
+                        onDismissRequest = {
+                            showDatePickerSheet = false
+                            scope.launch { datePickerSheetState.hide() }
+                        }
+                    ) {
+                        DatePicker(
+                            state = datePickerState,
+                            colors = DatePickerDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                            ),
+                        )
+                    }
                 }
             }
         }
