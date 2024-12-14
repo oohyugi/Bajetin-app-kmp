@@ -1,5 +1,6 @@
 package com.bajetin.app.ui.component
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -14,19 +15,20 @@ import androidx.compose.ui.unit.dp
 fun ButtonIcon(
     onClick: () -> Unit,
     label: String,
-    leadingIcon: @Composable () -> Unit = {},
+    leadingIcon: @Composable (Modifier) -> Unit = {},
     modifier: Modifier = Modifier,
-    trailingIcon: @Composable () -> Unit = {},
-    buttonColors: ButtonColors = ButtonDefaults.buttonColors()
+    trailingIcon: @Composable (Modifier) -> Unit = {},
+    buttonColors: ButtonColors = ButtonDefaults.buttonColors(),
 ) {
     Button(
         onClick = onClick,
         colors = buttonColors,
         shape = MaterialTheme.shapes.medium,
+        contentPadding = PaddingValues(horizontal = 12.dp),
         modifier = modifier,
     ) {
-        leadingIcon()
-        Text(label, modifier = Modifier.padding(horizontal = 4.dp))
-        trailingIcon()
+        leadingIcon(Modifier.padding(end = 8.dp))
+        Text(label)
+        trailingIcon(Modifier.padding(start = 8.dp))
     }
 }

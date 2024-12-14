@@ -180,14 +180,12 @@ class AddTransactionViewModel(
         val currentAmount = state.amount
 
         if (currentExpression.containsOperators()) {
-            // If we have an operator, just reset everything
             updateAddTransactionUiState(
                 amountStr = "0",
                 expression = "",
                 isAmountCleared = true
             )
         } else {
-            // Otherwise, remove last character
             val newAmount = currentAmount.dropLastOrDefault("0")
             val newExpression = currentExpression.dropLastOrDefault("")
 

@@ -82,14 +82,15 @@ fun AddTransactionSheet(
                     painter = painterResource(Res.drawable.ic_calendar_date),
                     "date",
                     tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = it
                 )
             },
-            trailingIcon = {
+            trailingIcon = { modifier ->
                 Icon(
                     painter = painterResource(Res.drawable.ic_arrow_down),
                     "date",
                     tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(18.dp)
+                    modifier = modifier.size(18.dp)
                 )
             },
             buttonColors = ButtonDefaults.buttonColors(
@@ -135,12 +136,12 @@ fun AddTransactionSheet(
                 onClick = {
                 },
                 label = "More",
-                trailingIcon = {
+                trailingIcon = { modifier ->
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_down),
                         "category",
                         tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        modifier = modifier.align(Alignment.CenterVertically)
                     )
                 },
                 buttonColors = ButtonDefaults.buttonColors(
