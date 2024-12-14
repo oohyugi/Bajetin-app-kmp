@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount INTEGER DEFAULT 0,
     category_id INTEGER NOT NULL,
     type TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL
+    created_at INTEGER,
+    updated_at INTEGER
 );
 
 insertTransaction:

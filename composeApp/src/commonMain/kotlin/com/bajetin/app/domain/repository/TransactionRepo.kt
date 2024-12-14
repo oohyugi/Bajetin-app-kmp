@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface TransactionRepo {
     suspend fun insertCategory(label: String, emoticon: String?)
     fun getAllCategories(): Flow<List<TransactionCategoryEntity>>
+    suspend fun insertTransaction(catId: Long?, amount: String, dateMillis: Long?, notes: String)
 }
