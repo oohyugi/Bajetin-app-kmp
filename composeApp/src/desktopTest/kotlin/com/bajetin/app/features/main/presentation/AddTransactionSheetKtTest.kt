@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.testing.TestLifecycleOwner
+import com.bajetin.app.core.TestCoroutineDispatcherProvider
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.domain.repository.TransactionRepo
 import kotlinx.coroutines.flow.Flow
@@ -44,8 +45,10 @@ class AddTransactionSheetKtTest {
                                 dateMillis: Long?,
                                 notes: String
                             ) = Unit
-                        }
+                        },
+                        TestCoroutineDispatcherProvider()
                     ),
+
                     onEventLaunch = {},
                 )
             }

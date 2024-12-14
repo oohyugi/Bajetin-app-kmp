@@ -1,9 +1,11 @@
 package com.bajetin.app.di
 
+import com.bajetin.app.core.coroutine.DefaultCoroutineDispatcherProvider
 import com.bajetin.app.data.local.TransactionLocalSource
 import com.bajetin.app.data.local.TransactionLocalSourceImpl
 import com.bajetin.app.data.repository.TransactionRepoImpl
 import com.bajetin.app.db.BajetinDatabase
+import com.bajetin.app.domain.CoroutineDispatcherProvider
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.AddTransactionViewModel
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +29,7 @@ val coreModule = module {
     single(named(DefaultDispatcher)) {
         Dispatchers.Default
     }
+    single<CoroutineDispatcherProvider> { DefaultCoroutineDispatcherProvider() }
 }
 
 val dataSourceModule = module {
@@ -40,6 +43,6 @@ val repositoryModule = module {
 
 val viewModelModule = module {
     viewModel {
-        AddTransactionViewModel(get(), get(named(DefaultDispatcher)))
+        AddTransactionViewModel(get(), get(), get(named(DefaultDispatcher)))
     }
 }
