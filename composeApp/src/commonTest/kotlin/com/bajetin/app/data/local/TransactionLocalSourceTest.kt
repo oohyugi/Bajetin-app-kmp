@@ -56,6 +56,7 @@ class TransactionLocalSourceTest : KoinTest {
 
     @Test
     fun `should insert and retrieve transactions`() = runTest(testDispatcher) {
+        dataSource.insertCategory("Transport","")
         dataSource.insertTransaction(1, 1000, 1625072400000L, "Kantor")
 
         val transactions = dataSource.getAllTransactions().first()

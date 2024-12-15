@@ -6,11 +6,11 @@ import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.db.BajetinDatabase
 import com.bajetin.app.db.Categories
+import com.bajetin.app.db.SelectAllTransactionsWithCategory
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
@@ -36,24 +36,28 @@ class TransactionLocalSourceImpl(
 
     /**
      * Retrieves all transaction categories as a [Flow] of [List] of [TransactionCategoryEntity].
-     * [handleCategoriesResult] If the database is empty, inserts default categories and returns the updated list.
+     * If the database is empty, inserts default categories and returns the updated list.
      * Uses `asFlow()` to observe real-time updates from the database.
      * @return A [Flow] emitting a list of transaction categories.
      */
-    override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> {
-        return queries.selectAllCategories()
+    override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> =
+        queries.selectAllCategories()
             .asFlow()
             .mapToList(ioDispatcher)
             .map { categories ->
-                handleCategoriesResult(categories)
+                if (categories.isEmpty()) {
+                    insertDefaultCategories()
+                    TransactionCategoryEntity.initialCategories
+                } else {
+                    categories.map(::mapCategoryEntity)
+                }
             }
-    }
 
     override suspend fun insertTransaction(
         catId: Long,
         amount: Long,
         dateMillis: Long,
-        notes: String
+        notes: String,
     ) =
         withContext(ioDispatcher) {
             queries.insertTransaction(
@@ -66,45 +70,36 @@ class TransactionLocalSourceImpl(
             )
         }
 
-    override fun getAllTransactions(): Flow<List<TransactionEntity>> {
-        return queries.selectAllTransaction().asFlow().mapToList(ioDispatcher).map { transactions ->
-            val categories = getAllCategories().first()
-            transactions.map { transaction ->
-                TransactionEntity(
-                    id = transaction.id,
-                    category = categories.find { category -> category.id == transaction.category_id },
-                    updatedAt = transaction.updated_at,
-                    amount = transaction.amount ?: 0,
-                    notes = transaction.note
-                )
+    override fun getAllTransactions(): Flow<List<TransactionEntity>> =
+        queries.selectAllTransactionsWithCategory()
+            .asFlow()
+            .mapToList(ioDispatcher)
+            .map { transactions ->
+                transactions.map(::mapTransactionEntity)
             }
-        }
-    }
-
-    private suspend fun handleCategoriesResult(
-        categories: List<Categories>
-    ) = if (categories.isEmpty()) {
-        insertDefaultCategories()
-        queries.selectAllCategories().executeAsList().map { category ->
-            TransactionCategoryEntity(
-                category.id,
-                category.emoticon,
-                category.label
-            )
-        }
-    } else {
-        categories.map { category ->
-            TransactionCategoryEntity(
-                category.id,
-                category.emoticon,
-                category.label
-            )
-        }
-    }
 
     private suspend fun insertDefaultCategories() {
         TransactionCategoryEntity.initialCategories.forEach {
             insertCategory(it.label, it.emoticon)
         }
     }
+
+    private fun mapCategoryEntity(category: Categories) = TransactionCategoryEntity(
+        id = category.id,
+        emoticon = category.emoticon,
+        label = category.label
+    )
+
+    private fun mapTransactionEntity(transactionsWithCategories: SelectAllTransactionsWithCategory) =
+        TransactionEntity(
+            id = transactionsWithCategories.id,
+            category = TransactionCategoryEntity(
+                transactionsWithCategories.id,
+                transactionsWithCategories.emoticon,
+                transactionsWithCategories.label.orEmpty()
+            ),
+            updatedAt = transactionsWithCategories.updated_at,
+            amount = transactionsWithCategories.amount ?: 0,
+            notes = transactionsWithCategories.note
+        )
 }
