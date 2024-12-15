@@ -10,9 +10,7 @@ import com.bajetin.app.domain.CoroutineDispatcherProvider
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,15 +24,15 @@ import kotlinx.coroutines.launch
 class AddTransactionViewModel(
     private val transactionRepo: TransactionRepo,
     private val coroutineDispatcher: CoroutineDispatcherProvider,
-    mainDispatcher: CoroutineDispatcher = Dispatchers.Default,
+    externalScope: CoroutineScope,
 ) : ViewModel() {
 
-    private var _addTransactionUiState = MutableStateFlow(AddTransactionState())
+    private var _addTransactionUiState = MutableStateFlow(AddTransactionUiState())
     val addTransactionUiState = _addTransactionUiState.asStateFlow()
 
     val categoryUiState: StateFlow<List<TransactionCategoryEntity>> =
         transactionRepo.getAllCategories().stateIn(
-            scope = CoroutineScope(mainDispatcher),
+            scope = externalScope,
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = emptyList()
         )
@@ -69,7 +67,7 @@ class AddTransactionViewModel(
                 )
 
                 _uiEvent.emit(AddTransactionUiEvent.HideSheet)
-                _addTransactionUiState.value = AddTransactionState() // reset
+                _addTransactionUiState.value = AddTransactionUiState() // reset
             }
         }
     }

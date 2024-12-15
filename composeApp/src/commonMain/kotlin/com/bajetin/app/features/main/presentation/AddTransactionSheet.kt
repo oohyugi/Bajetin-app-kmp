@@ -43,7 +43,7 @@ import bajetin.composeapp.generated.resources.ic_pen_square
 import com.bajetin.app.core.utils.Constants
 import com.bajetin.app.core.utils.containsOperators
 import com.bajetin.app.core.utils.formatToCurrency
-import com.bajetin.app.core.utils.fromDatePickerToDisplay
+import com.bajetin.app.core.utils.toDisplayDate
 import com.bajetin.app.features.main.presentation.component.CategoryChips
 import com.bajetin.app.features.main.presentation.component.NumpadRow
 import com.bajetin.app.ui.component.ButtonIcon
@@ -72,11 +72,7 @@ fun AddTransactionSheet(
     ) {
         ButtonIcon(
             onClick = { viewModel.onClickDatePicker() },
-            label = if (addTransactionUiState.dateMillis == null) {
-                "Today"
-            } else {
-                addTransactionUiState.dateMillis.fromDatePickerToDisplay()
-            },
+            label = addTransactionUiState.dateMillis.toDisplayDate(),
             leadingIcon = {
                 Icon(
                     painter = painterResource(Res.drawable.ic_calendar_date),

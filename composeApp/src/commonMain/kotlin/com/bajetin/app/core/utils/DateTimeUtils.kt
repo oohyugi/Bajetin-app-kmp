@@ -14,13 +14,22 @@ import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 
-private val CALENDAR_FORMATTER: DateTimeFormat<LocalDate> by lazy {
+private val DisplayDateWithoutYear: DateTimeFormat<LocalDate> by lazy {
     LocalDate.Format {
         dayOfWeek(DayOfWeekNames.ENGLISH_ABBREVIATED)
         chars(", ")
         dayOfMonth()
         char(' ')
         monthName(MonthNames.ENGLISH_ABBREVIATED)
+    }
+}
+private val DisplayDate: DateTimeFormat<LocalDate> by lazy {
+    LocalDate.Format {
+        dayOfMonth()
+        char(' ')
+        monthName(MonthNames.ENGLISH_ABBREVIATED)
+        char(' ')
+        yearTwoDigits(1970)
     }
 }
 
@@ -31,15 +40,30 @@ object DateTimeUtils {
     }
 }
 
-fun Long.fromDatePickerToDisplay(): String {
+fun Long?.toDisplayDate(): String {
+    if (this == null) return TodayTitle
     val instant = Instant.fromEpochMilliseconds(this)
     val localDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
     return if (localDate == DateTimeUtils.currentDate()
     ) {
-        "Today"
+        TodayTitle
+    } else if (localDate.toEpochDays() > DateTimeUtils.currentDate().toEpochDays()) {
+        "$AfterCurrentDateTitle ${localDate.format(DisplayDate)}"
+    } else if (localDate.year < DateTimeUtils.currentDate().year) {
+        localDate.format(DisplayDate)
     } else {
-        localDate.format(CALENDAR_FORMATTER)
+        localDate.format(DisplayDateWithoutYear)
     }
+}
+
+@OptIn(FormatStringsInDatetimeFormats::class)
+fun Long.toTimeDisplay(): String {
+    val instant = Instant.fromEpochMilliseconds(this)
+    val localDate = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    val dateFormat = LocalDateTime.Format {
+        byUnicodePattern("HH:MM")
+    }
+    return dateFormat.format(localDate)
 }
 
 @OptIn(FormatStringsInDatetimeFormats::class)
@@ -51,3 +75,6 @@ fun Long.formatTimestamp(pattern: String = "dd,MM yyyy"): String {
     }
     return dateFormat.format(localDateTime)
 }
+
+const val TodayTitle = "Today"
+const val AfterCurrentDateTitle = "Upcoming"
