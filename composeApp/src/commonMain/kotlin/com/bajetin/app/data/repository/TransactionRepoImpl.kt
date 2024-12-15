@@ -1,9 +1,11 @@
 package com.bajetin.app.data.repository
 
 import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.data.local.TransactionLocalSource
 import com.bajetin.app.domain.repository.TransactionRepo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.Clock
 
 class TransactionRepoImpl(
     private val localSource: TransactionLocalSource,
@@ -26,8 +28,11 @@ class TransactionRepoImpl(
         localSource.insertTransaction(
             catId,
             amount = amount.toLongOrNull() ?: 0,
-            dateMillis = dateMillis ?: 0,
+            dateMillis = dateMillis ?: Clock.System.now().toEpochMilliseconds(),
             notes
         )
     }
+
+    override fun getAllTransactions(): Flow<List<TransactionEntity>> =
+        localSource.getAllTransactions()
 }

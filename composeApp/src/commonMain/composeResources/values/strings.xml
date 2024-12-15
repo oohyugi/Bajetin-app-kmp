@@ -1,0 +1,5 @@
+<resources>
+    <string name="transaction_title">Transactions</string>
+    <string name="upcoming_title">Upcoming</string>
+    <string name="today_title">Today</string>
+</resources>

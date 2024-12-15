@@ -5,6 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.bajetin.app.features.transactionHistory.presentation.TransactionHistoryScreen
+import com.bajetin.app.features.transactionHistory.presentation.TransactionHistoryViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun NavigationHost(navHostController: NavHostController) {
@@ -13,7 +15,8 @@ fun NavigationHost(navHostController: NavHostController) {
         startDestination = BottomNavItem.Transaction.route
     ) {
         composable(route = BottomNavItem.Transaction.route) {
-            TransactionHistoryScreen()
+            val viewModel: TransactionHistoryViewModel = koinInject()
+            TransactionHistoryScreen(viewModel)
         }
     }
 }
