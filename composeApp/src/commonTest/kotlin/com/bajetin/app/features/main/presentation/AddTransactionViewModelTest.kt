@@ -7,10 +7,12 @@ import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.koin.test.KoinTest
 import kotlin.test.Test
@@ -18,13 +20,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class AddTransactionViewModelTest : KoinTest {
-
     private val dispatcherProvider = TestCoroutineDispatcherProvider()
-
+    private val testDispatcher = StandardTestDispatcher()
+    private val testScope = CoroutineScope(dispatcherProvider.main)
     private val viewModel =
         AddTransactionViewModel(
             transactionRepo = TransactionRepoFake(),
-            coroutineDispatcher = dispatcherProvider
+            coroutineDispatcher = dispatcherProvider,
+            externalScope = testScope
         )
 
     @Test
@@ -66,12 +69,13 @@ class AddTransactionViewModelTest : KoinTest {
     }
 
     @Test
-    fun `should return default categories`() = runTest {
+    fun `should return default categories`() = runTest(testDispatcher) {
         val viewModel = AddTransactionViewModel(
             TransactionRepoFake(
                 categories = TransactionCategoryEntity.initialCategories,
             ),
-            dispatcherProvider
+            dispatcherProvider,
+            this.backgroundScope
         )
 
         viewModel.categoryUiState.test {
@@ -97,7 +101,8 @@ class AddTransactionViewModelTest : KoinTest {
                     assertEquals("Beli ayam geprek", notes)
                 }
             ),
-            dispatcherProvider
+            dispatcherProvider,
+            testScope
         )
 
         viewModel.selectCategory(category)
@@ -114,7 +119,7 @@ class AddTransactionViewModelTest : KoinTest {
         }
 
         val uiState = viewModel.addTransactionUiState.first()
-        assertEquals(AddTransactionState(), uiState)
+        assertEquals(AddTransactionUiState(), uiState)
     }
 
     @Test
@@ -134,7 +139,6 @@ class AddTransactionViewModelTest : KoinTest {
         val selectedDate = 1625072400000L
 
         viewModel.onSelectedDate(selectedDate)
-
         val uiState = viewModel.addTransactionUiState.value
         assertEquals(uiState.dateMillis, selectedDate)
     }
@@ -164,6 +168,7 @@ class TransactionRepoFake(
     val insertCategoryFake: ((String, String?) -> Unit)? = null,
     val categories: List<TransactionCategoryEntity> = emptyList(),
     val insertTransactionFake: ((catId: Long?, amount: String, dateMillis: Long?, notes: String) -> Unit)? = null,
+    val transactions: List<TransactionEntity> = emptyList(),
 ) : TransactionRepo {
     private val categoryFlow = MutableStateFlow(categories)
 
@@ -182,6 +187,6 @@ class TransactionRepoFake(
     }
 
     override fun getAllTransactions(): Flow<List<TransactionEntity>> {
-        return flowOf()
+        return flowOf(transactions)
     }
 }

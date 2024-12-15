@@ -1,7 +1,6 @@
 package com.bajetin.app.ui.component
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +23,7 @@ fun NavRailBar(
     onNavBarClick: (BottomNavItem) -> Unit,
 ) {
     NavigationRail(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         items.iterator().forEach { item ->
