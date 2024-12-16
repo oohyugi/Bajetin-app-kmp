@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.bajetin.app.core.TestCoroutineDispatcherProvider
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
@@ -181,7 +182,8 @@ class TransactionRepoFake(
         catId: Long?,
         amount: String,
         dateMillis: Long?,
-        notes: String
+        notes: String,
+        transactionType: TransactionType,
     ) {
         insertTransactionFake?.invoke(catId, amount, dateMillis, notes)
     }

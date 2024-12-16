@@ -2,6 +2,7 @@ package com.bajetin.app.data.repository
 
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.data.local.TransactionLocalSource
 import com.bajetin.app.domain.repository.TransactionRepo
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,8 @@ class TransactionRepoImpl(
         catId: Long?,
         amount: String,
         dateMillis: Long?,
-        notes: String
+        notes: String,
+        transactionType: TransactionType
     ) {
         if (catId == null) return
 
@@ -29,7 +31,8 @@ class TransactionRepoImpl(
             catId,
             amount = amount.toLongOrNull() ?: 0,
             dateMillis = dateMillis ?: Clock.System.now().toEpochMilliseconds(),
-            notes
+            notes = notes,
+            transactionType = transactionType
         )
     }
 

@@ -1,7 +1,11 @@
 package com.bajetin.app.data.repository
 
+import com.bajetin.app.core.utils.TimePeriod
+import com.bajetin.app.data.entity.TransactionTotalEntity
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionSummaryEntity
+import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.data.local.TransactionLocalSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -32,7 +36,8 @@ class TransactionRepoImplTest {
             catId: Long,
             amount: Long,
             dateMillis: Long,
-            notes: String
+            notes: String,
+            transactionType: TransactionType,
         ) {
             transactions.add(
                 TransactionEntity(
@@ -47,6 +52,22 @@ class TransactionRepoImplTest {
 
         override fun getAllTransactions(): Flow<List<TransactionEntity>> {
             return flowOf(transactions)
+        }
+
+        override fun getTotal(
+            period: TimePeriod,
+            currentDateInMillis: Long,
+            transactionType: TransactionType,
+        ): Flow<TransactionTotalEntity> {
+            return flowOf(TransactionTotalEntity(0, TimePeriod.DAY))
+        }
+
+        override fun getSummary(
+            period: TimePeriod,
+            currentDateInMillis: Long,
+            transactionType: TransactionType
+        ): Flow<List<TransactionSummaryEntity>> {
+            return flowOf()
         }
     }
 
