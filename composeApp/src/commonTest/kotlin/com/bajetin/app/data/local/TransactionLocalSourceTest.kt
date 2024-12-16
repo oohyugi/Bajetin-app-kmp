@@ -98,7 +98,7 @@ class TransactionLocalSourceTest : KoinTest {
     fun `should return total income by period`() = runTest(testDispatcher) {
         setupTestDataForTestTotalSpending()
         val currentDateInMillis = 1734504531000 // Wednesday, 18 December 2024
-        val period = TimePeriod.YEAR
+        val period = TimePeriod.Year
 
         val spending = dataSource.getTotal(
             period = period,
@@ -117,7 +117,7 @@ class TransactionLocalSourceTest : KoinTest {
 
     @Test
     fun `getSummary should return correct number of summaries`() = runTest(testDispatcher) {
-        val timePeriod = TimePeriod.MONTH
+        val timePeriod = TimePeriod.Month
         val transactionType = TransactionType.Expense
         val currentDateInMillis = 1734504531000L // Wednesday, 18 December 2024
         setupTestDataForTestTotalSpending()
@@ -180,11 +180,11 @@ class TransactionLocalSourceTest : KoinTest {
 
     private fun getExpectedTotals(): Map<TimePeriod, Long> {
         return mapOf(
-            TimePeriod.DAY to 15000,
-            TimePeriod.WEEK to 35000,
-            TimePeriod.MONTH to 55000,
-            TimePeriod.YEAR to 75000,
-            TimePeriod.ALL_TIME to 85000
+            TimePeriod.Day to 15000,
+            TimePeriod.Week to 35000,
+            TimePeriod.Month to 55000,
+            TimePeriod.Year to 75000,
+            TimePeriod.AllTime to 85000
         )
     }
 }

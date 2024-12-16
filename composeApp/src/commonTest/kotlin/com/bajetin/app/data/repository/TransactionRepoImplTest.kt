@@ -90,10 +90,10 @@ class TransactionRepoImplTest : KoinTest {
         repo.insertTransaction(0, amount = "10000", 1625072400000L, notes = "Kantor")
 
         val transactions =
-            repo.getTotalTransactions(TimePeriod.DAY, 1625072400000L, TransactionType.Expense)
+            repo.getTotalTransactions(TimePeriod.Day, 1625072400000L, TransactionType.Expense)
                 .first()
 
-        assertEquals(TransactionTotalEntity(10000, TimePeriod.DAY), transactions)
+        assertEquals(TransactionTotalEntity(10000, TimePeriod.Day), transactions)
     }
 
     @Test
@@ -102,7 +102,7 @@ class TransactionRepoImplTest : KoinTest {
         repo.insertTransaction(1, amount = "10000", 1625072400000L, notes = "Kantor")
 
         val transactions =
-            repo.getSummaryTransactions(TimePeriod.DAY, 1625072400000L, TransactionType.Expense)
+            repo.getSummaryTransactions(TimePeriod.Day, 1625072400000L, TransactionType.Expense)
                 .first()
 
         assertContains(
@@ -114,7 +114,7 @@ class TransactionRepoImplTest : KoinTest {
                     label = "Transport"
                 ),
                 10000,
-                TimePeriod.DAY,
+                TimePeriod.Day,
             )
         )
     }

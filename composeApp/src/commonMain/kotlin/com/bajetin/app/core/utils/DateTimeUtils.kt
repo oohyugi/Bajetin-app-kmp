@@ -88,11 +88,11 @@ fun calculateTimeRange(period: TimePeriod, currentInstant: Instant): Pair<Long, 
     val currentDate: LocalDate = currentDateTime.date
 
     val start: Instant = when (period) {
-        TimePeriod.DAY -> {
+        TimePeriod.Day -> {
             currentInstant
         }
 
-        TimePeriod.WEEK -> {
+        TimePeriod.Week -> {
             val currentDayNumber = currentDateTime.dayOfWeek.isoDayNumber
             val firstDayNumber = DayOfWeek.MONDAY.isoDayNumber
 
@@ -105,15 +105,15 @@ fun calculateTimeRange(period: TimePeriod, currentInstant: Instant): Pair<Long, 
             firstDayDate.atStartOfDayIn(timeZone)
         }
 
-        TimePeriod.MONTH -> {
+        TimePeriod.Month -> {
             LocalDate(currentDate.year, currentDate.month, 1).atStartOfDayIn(timeZone)
         }
 
-        TimePeriod.YEAR -> {
+        TimePeriod.Year -> {
             LocalDate(currentDate.year, Month.JANUARY, 1).atStartOfDayIn(timeZone)
         }
 
-        TimePeriod.ALL_TIME -> {
+        TimePeriod.AllTime -> {
             Instant.fromEpochMilliseconds(1608274131000) //  TODO change to first date installed app
         }
     }

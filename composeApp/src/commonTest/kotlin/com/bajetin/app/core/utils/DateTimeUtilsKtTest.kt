@@ -19,23 +19,23 @@ class DateTimeUtilsKtTest {
 
             when (it) {
                 // should same with currentTimeInMillis
-                TimePeriod.DAY -> {
+                TimePeriod.Day -> {
                     assertEquals(result, Pair(currentDateInMillis, currentDateInMillis))
                 }
                 // should start from monday 16
-                TimePeriod.WEEK -> {
+                TimePeriod.Week -> {
                     assertEquals(result, Pair(1734282000000, currentDateInMillis))
                 }
                 // should start from sunday 1
-                TimePeriod.MONTH -> {
+                TimePeriod.Month -> {
                     assertEquals(result, Pair(1732986000000, currentDateInMillis))
                 }
                 // should start from monday 1 january 2024
-                TimePeriod.YEAR -> {
+                TimePeriod.Year -> {
                     assertEquals(result, Pair(1704042000000, currentDateInMillis))
                 }
                 // should start from friday, 18 december 2020
-                TimePeriod.ALL_TIME -> {
+                TimePeriod.AllTime -> {
                     assertEquals(result, Pair(1608274131000, currentDateInMillis))
                 }
             }

@@ -4,10 +4,10 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import com.bajetin.app.core.utils.TimePeriod
 import com.bajetin.app.core.utils.calculateTimeRange
-import com.bajetin.app.data.entity.TransactionSummaryEntity
-import com.bajetin.app.data.entity.TransactionTotalEntity
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionSummaryEntity
+import com.bajetin.app.data.entity.TransactionTotalEntity
 import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.db.BajetinDatabase
 import com.bajetin.app.db.Categories
@@ -114,15 +114,18 @@ class TransactionLocalSourceImpl(
             period = period,
             currentInstant = Instant.fromEpochMilliseconds(currentDateInMillis)
         )
-
         return queries.selectTotalTransactionBetween(
             transactionType.name,
             startMillis,
             endMillis
         ).asFlow()
+            .mapToList(ioDispatcher)
             .map { list ->
-                val result = list.executeAsOne()
-                TransactionTotalEntity(totalAmount = result.total?.toLong() ?: 0, timePeriod = period)
+                val result = list.first()
+                TransactionTotalEntity(
+                    totalAmount = result.total?.toLong() ?: 0,
+                    timePeriod = period
+                )
             }
     }
 
