@@ -1,7 +1,10 @@
 package com.bajetin.app.domain.repository
 
+import com.bajetin.app.core.utils.TimePeriod
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionSummaryEntity
+import com.bajetin.app.data.entity.TransactionTotalEntity
 import com.bajetin.app.data.entity.TransactionType
 import kotlinx.coroutines.flow.Flow
 
@@ -17,4 +20,16 @@ interface TransactionRepo {
     )
 
     fun getAllTransactions(): Flow<List<TransactionEntity>>
+
+    fun getTotalTransactions(
+        timePeriod: TimePeriod,
+        dateMillis: Long,
+        transactionType: TransactionType
+    ): Flow<TransactionTotalEntity>
+
+    fun getSummaryTransactions(
+        timePeriod: TimePeriod,
+        dateMillis: Long,
+        transactionType: TransactionType
+    ): Flow<List<TransactionSummaryEntity>>
 }

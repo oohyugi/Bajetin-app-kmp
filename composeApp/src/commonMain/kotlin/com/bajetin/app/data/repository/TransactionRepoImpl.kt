@@ -1,7 +1,10 @@
 package com.bajetin.app.data.repository
 
+import com.bajetin.app.core.utils.TimePeriod
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionSummaryEntity
+import com.bajetin.app.data.entity.TransactionTotalEntity
 import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.data.local.TransactionLocalSource
 import com.bajetin.app.domain.repository.TransactionRepo
@@ -38,4 +41,17 @@ class TransactionRepoImpl(
 
     override fun getAllTransactions(): Flow<List<TransactionEntity>> =
         localSource.getAllTransactions()
+
+    override fun getTotalTransactions(
+        timePeriod: TimePeriod,
+        dateMillis: Long,
+        transactionType: TransactionType
+    ): Flow<TransactionTotalEntity> = localSource.getTotal(timePeriod, dateMillis, transactionType)
+
+    override fun getSummaryTransactions(
+        timePeriod: TimePeriod,
+        dateMillis: Long,
+        transactionType: TransactionType
+    ): Flow<List<TransactionSummaryEntity>> =
+        localSource.getSummary(timePeriod, dateMillis, transactionType)
 }

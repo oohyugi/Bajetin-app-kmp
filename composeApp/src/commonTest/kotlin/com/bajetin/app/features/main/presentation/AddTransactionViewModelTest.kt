@@ -2,8 +2,11 @@ package com.bajetin.app.features.main.presentation
 
 import app.cash.turbine.test
 import com.bajetin.app.core.TestCoroutineDispatcherProvider
+import com.bajetin.app.core.utils.TimePeriod
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionSummaryEntity
+import com.bajetin.app.data.entity.TransactionTotalEntity
 import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
@@ -190,5 +193,21 @@ class TransactionRepoFake(
 
     override fun getAllTransactions(): Flow<List<TransactionEntity>> {
         return flowOf(transactions)
+    }
+
+    override fun getTotalTransactions(
+        timePeriod: TimePeriod,
+        dateMillis: Long,
+        transactionType: TransactionType
+    ): Flow<TransactionTotalEntity> {
+        return flowOf()
+    }
+
+    override fun getSummaryTransactions(
+        timePeriod: TimePeriod,
+        dateMillis: Long,
+        transactionType: TransactionType
+    ): Flow<List<TransactionSummaryEntity>> {
+        return flowOf()
     }
 }
