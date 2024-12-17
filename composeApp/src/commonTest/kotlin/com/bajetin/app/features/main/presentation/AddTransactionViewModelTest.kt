@@ -11,7 +11,6 @@ import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -26,12 +25,10 @@ import kotlin.test.assertTrue
 class AddTransactionViewModelTest : KoinTest {
     private val dispatcherProvider = TestCoroutineDispatcherProvider()
     private val testDispatcher = StandardTestDispatcher()
-    private val testScope = CoroutineScope(dispatcherProvider.main)
     private val viewModel =
         AddTransactionViewModel(
             transactionRepo = TransactionRepoFake(),
             coroutineDispatcher = dispatcherProvider,
-            externalScope = testScope
         )
 
     @Test
@@ -79,7 +76,6 @@ class AddTransactionViewModelTest : KoinTest {
                 categories = TransactionCategoryEntity.initialCategories,
             ),
             dispatcherProvider,
-            this.backgroundScope
         )
 
         viewModel.categoryUiState.test {
@@ -106,7 +102,6 @@ class AddTransactionViewModelTest : KoinTest {
                 }
             ),
             dispatcherProvider,
-            testScope
         )
 
         viewModel.selectCategory(category)
@@ -173,6 +168,7 @@ class TransactionRepoFake(
     val categories: List<TransactionCategoryEntity> = emptyList(),
     val insertTransactionFake: ((catId: Long?, amount: String, dateMillis: Long?, notes: String) -> Unit)? = null,
     val transactions: List<TransactionEntity> = emptyList(),
+    val totalEntity: TransactionTotalEntity = TransactionTotalEntity(0, TimePeriod.Day)
 ) : TransactionRepo {
     private val categoryFlow = MutableStateFlow(categories)
 
@@ -195,12 +191,12 @@ class TransactionRepoFake(
         return flowOf(transactions)
     }
 
-    override fun getTotalTransactions(
+    override suspend fun getTotalTransactions(
         timePeriod: TimePeriod,
         dateMillis: Long,
         transactionType: TransactionType
-    ): Flow<TransactionTotalEntity> {
-        return flowOf()
+    ): TransactionTotalEntity {
+        return totalEntity
     }
 
     override fun getSummaryTransactions(
