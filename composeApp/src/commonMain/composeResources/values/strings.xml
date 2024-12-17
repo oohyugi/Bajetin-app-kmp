@@ -1,5 +1,5 @@
 <resources>
-    <string name="transaction_title">1Mili</string>
+    <string name="transaction_title">Bajetin</string>
     <string name="upcoming_title">Upcoming</string>
     <string name="today_title">Today</string>
     <string name="spent_title">Today</string>
