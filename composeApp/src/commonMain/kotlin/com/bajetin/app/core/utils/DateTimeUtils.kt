@@ -18,6 +18,7 @@ import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.format.char
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minus
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
 private val DisplayDateWithoutYear: DateTimeFormat<LocalDate> by lazy {
@@ -40,9 +41,19 @@ private val DisplayDate: DateTimeFormat<LocalDate> by lazy {
 }
 
 object DateTimeUtils {
-    fun currentDate(): LocalDate {
+
+    fun currentInstant(): Instant {
+        val instant = currentDateTime().toInstant(TimeZone.currentSystemDefault())
+        return instant
+    }
+
+    fun currentDateTime(): LocalDateTime {
         return Clock.System.now()
-            .toLocalDateTime(TimeZone.currentSystemDefault()).date
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+    }
+
+    fun currentDate(): LocalDate {
+        return currentDateTime().date
     }
 }
 
@@ -89,7 +100,7 @@ fun calculateTimeRange(period: TimePeriod, currentInstant: Instant): Pair<Long, 
 
     val start: Instant = when (period) {
         TimePeriod.Day -> {
-            currentInstant
+            currentDate.atStartOfDayIn(timeZone)
         }
 
         TimePeriod.Week -> {
