@@ -1,4 +1,4 @@
-package com.bajetin.app.features.transactionHistory.presentation.component
+package com.bajetin.app.features.transaction.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.bajetin.app.core.utils.formatToCurrency
+import com.bajetin.app.core.utils.formatCurrency
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
 
@@ -53,7 +53,7 @@ internal fun TransactionItem(
             }
             Spacer(Modifier.width(16.dp))
             Text(
-                "Rp.${transaction.amount.toString().formatToCurrency()}",
+                formatCurrency(transaction.amount.toDouble()),
                 style = MaterialTheme.typography.titleMedium,
                 color = textColor
             )

@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,11 +41,12 @@ import bajetin.composeapp.generated.resources.ic_calendar_date
 import bajetin.composeapp.generated.resources.ic_pen_square
 import com.bajetin.app.core.utils.Constants
 import com.bajetin.app.core.utils.containsOperators
-import com.bajetin.app.core.utils.formatToCurrency
+import com.bajetin.app.core.utils.formatCurrency
 import com.bajetin.app.core.utils.toDisplayDate
 import com.bajetin.app.features.main.presentation.component.CategoryChips
 import com.bajetin.app.features.main.presentation.component.NumpadRow
 import com.bajetin.app.ui.component.ButtonIcon
+import com.bajetin.app.ui.component.dismissKeyboardOnTap
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -57,7 +57,6 @@ fun AddTransactionSheet(
 ) {
     val addTransactionUiState = viewModel.addTransactionUiState.collectAsStateWithLifecycle().value
     val categoryUiState = viewModel.categoryUiState.collectAsStateWithLifecycle().value
-    val localKeyboard = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(true) {
         viewModel.uiEvent.collect { event ->
@@ -66,7 +65,7 @@ fun AddTransactionSheet(
     }
 
     Column(
-        modifier = modifier,
+        modifier = modifier.dismissKeyboardOnTap(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -122,15 +121,11 @@ fun AddTransactionSheet(
             CategoryChips(
                 categories = categoryUiState,
                 categorySelected = addTransactionUiState.categorySelected,
-                onClickCategory = {
-                    viewModel.selectCategory(it)
-                    localKeyboard?.hide()
-                },
+                onClickCategory = viewModel::selectCategory,
                 modifier = Modifier.weight(1F)
             )
             ButtonIcon(
-                onClick = {
-                },
+                onClick = {},
                 label = "More",
                 trailingIcon = { modifier ->
                     Icon(
@@ -178,8 +173,10 @@ private fun AmountExpressionColumn(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            Text("Rp.")
-            AmountText(amount.formatToCurrency())
+            val formatedAmount = formatCurrency(amount.toDouble())
+            val firstDigitIndex = formatedAmount.indexOfFirst { it.isDigit() }
+            Text(formatedAmount.substring(0, firstDigitIndex))
+            AmountText(formatedAmount.substring(firstDigitIndex))
         }
     }
 }

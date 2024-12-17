@@ -2,24 +2,50 @@ package com.bajetin.app.data.local
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.bajetin.app.core.utils.TimePeriod
+import com.bajetin.app.core.utils.calculateTimeRange
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionSummaryEntity
+import com.bajetin.app.data.entity.TransactionTotalEntity
+import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.db.BajetinDatabase
 import com.bajetin.app.db.Categories
 import com.bajetin.app.db.SelectAllTransactionsWithCategory
+import com.bajetin.app.db.SelectSummaryBetween
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
 
 interface TransactionLocalSource {
     suspend fun insertCategory(label: String, emoticon: String?)
     fun getAllCategories(): Flow<List<TransactionCategoryEntity>>
 
-    suspend fun insertTransaction(catId: Long, amount: Long, dateMillis: Long, notes: String)
+    suspend fun insertTransaction(
+        catId: Long,
+        amount: Long,
+        dateMillis: Long,
+        notes: String,
+        transactionType: TransactionType,
+    )
+
     fun getAllTransactions(): Flow<List<TransactionEntity>>
+
+    suspend fun getTotal(
+        period: TimePeriod,
+        currentDateInMillis: Long,
+        transactionType: TransactionType,
+    ): TransactionTotalEntity
+
+    fun getSummary(
+        period: TimePeriod,
+        currentDateInMillis: Long,
+        transactionType: TransactionType,
+    ): Flow<List<TransactionSummaryEntity>>
 }
 
 class TransactionLocalSourceImpl(
@@ -58,13 +84,14 @@ class TransactionLocalSourceImpl(
         amount: Long,
         dateMillis: Long,
         notes: String,
+        transactionType: TransactionType
     ) =
         withContext(ioDispatcher) {
             queries.insertTransaction(
                 note = notes,
                 amount = amount,
                 category_id = catId,
-                type = "expense",
+                type = transactionType.name,
                 updated_at = dateMillis,
                 created_at = dateMillis,
             )
@@ -77,6 +104,43 @@ class TransactionLocalSourceImpl(
             .map { transactions ->
                 transactions.map(::mapTransactionEntity)
             }
+
+    override suspend fun getTotal(
+        period: TimePeriod,
+        currentDateInMillis: Long,
+        transactionType: TransactionType,
+    ): TransactionTotalEntity {
+        return withContext(ioDispatcher) {
+            val (startMillis, endMillis) = calculateTimeRange(
+                period = period,
+                currentInstant = Instant.fromEpochMilliseconds(currentDateInMillis)
+            )
+            val result = queries.selectTotalTransactionBetween(
+                transactionType.name,
+                startMillis,
+                endMillis
+            ).executeAsOneOrNull()
+            TransactionTotalEntity(result?.total?.toLong() ?: 0, period)
+        }
+    }
+
+    override fun getSummary(
+        period: TimePeriod,
+        currentDateInMillis: Long,
+        transactionType: TransactionType
+    ): Flow<List<TransactionSummaryEntity>> {
+        val (startMillis, endMillis) = calculateTimeRange(
+            period = period,
+            currentInstant = Instant.fromEpochMilliseconds(currentDateInMillis)
+        )
+        return queries.selectSummaryBetween(transactionType.name, startMillis, endMillis).asFlow()
+            .mapToList(ioDispatcher)
+            .map { summary ->
+                summary.map {
+                    mapSummaryEntity(it, period)
+                }
+            }
+    }
 
     private suspend fun insertDefaultCategories() {
         TransactionCategoryEntity.initialCategories.forEach {
@@ -102,4 +166,16 @@ class TransactionLocalSourceImpl(
             amount = transactionsWithCategories.amount ?: 0,
             notes = transactionsWithCategories.note
         )
+
+    private fun mapSummaryEntity(
+        selectSummaryBetween: SelectSummaryBetween,
+        timePeriod: TimePeriod
+    ) =
+        with(selectSummaryBetween) {
+            TransactionSummaryEntity(
+                category = TransactionCategoryEntity(id ?: 0, emoticon, label.orEmpty()),
+                totalAmount = (total_amount ?: 0).toLong(),
+                timePeriod = timePeriod
+            )
+        }
 }

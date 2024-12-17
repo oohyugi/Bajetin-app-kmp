@@ -49,3 +49,22 @@ SELECT * FROM categories;
 
 clearAllCategories:
 DELETE FROM categories;
+
+selectSummaryBetween:
+SELECT
+    categories.id,
+    categories.label,
+    categories.emoticon,
+    SUM(transactions.amount) AS total_amount
+FROM transactions
+LEFT JOIN categories ON transactions.category_id = categories.id
+WHERE transactions.type=:type AND transactions.created_at BETWEEN :start AND :end
+GROUP BY categories.id, categories.label, categories.emoticon
+ORDER BY total_amount DESC;
+
+
+selectTotalTransactionBetween:
+SELECT
+    SUM(transactions.amount) AS total
+FROM transactions
+WHERE transactions.type=:type AND transactions.created_at BETWEEN :start AND :end;
