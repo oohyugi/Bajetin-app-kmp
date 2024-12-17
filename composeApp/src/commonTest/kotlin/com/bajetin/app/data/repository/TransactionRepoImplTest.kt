@@ -91,7 +91,6 @@ class TransactionRepoImplTest : KoinTest {
 
         val transactions =
             repo.getTotalTransactions(TimePeriod.Day, 1625072400000L, TransactionType.Expense)
-                .first()
 
         assertEquals(TransactionTotalEntity(10000, TimePeriod.Day), transactions)
     }

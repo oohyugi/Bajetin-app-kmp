@@ -82,7 +82,7 @@ class TransactionLocalSourceTest : KoinTest {
                 period = timePeriod,
                 currentDateInMillis = currentDateInMillis,
                 transactionType = TransactionType.Expense
-            ).first()
+            )
             val expectedTotal = expectedTotals[timePeriod] ?: 0L
             assertEquals(
                 TransactionTotalEntity(
@@ -104,7 +104,7 @@ class TransactionLocalSourceTest : KoinTest {
             period = period,
             currentDateInMillis = currentDateInMillis,
             transactionType = TransactionType.Income
-        ).first()
+        )
 
         assertEquals(
             TransactionTotalEntity(

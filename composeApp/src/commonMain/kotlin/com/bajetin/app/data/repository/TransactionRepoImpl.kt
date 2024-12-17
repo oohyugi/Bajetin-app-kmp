@@ -42,11 +42,11 @@ class TransactionRepoImpl(
     override fun getAllTransactions(): Flow<List<TransactionEntity>> =
         localSource.getAllTransactions()
 
-    override fun getTotalTransactions(
+    override suspend fun getTotalTransactions(
         timePeriod: TimePeriod,
         dateMillis: Long,
         transactionType: TransactionType
-    ): Flow<TransactionTotalEntity> = localSource.getTotal(timePeriod, dateMillis, transactionType)
+    ): TransactionTotalEntity = localSource.getTotal(timePeriod, dateMillis, transactionType)
 
     override fun getSummaryTransactions(
         timePeriod: TimePeriod,

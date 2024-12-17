@@ -21,11 +21,11 @@ interface TransactionRepo {
 
     fun getAllTransactions(): Flow<List<TransactionEntity>>
 
-    fun getTotalTransactions(
+    suspend fun getTotalTransactions(
         timePeriod: TimePeriod,
         dateMillis: Long,
         transactionType: TransactionType
-    ): Flow<TransactionTotalEntity>
+    ): TransactionTotalEntity
 
     fun getSummaryTransactions(
         timePeriod: TimePeriod,

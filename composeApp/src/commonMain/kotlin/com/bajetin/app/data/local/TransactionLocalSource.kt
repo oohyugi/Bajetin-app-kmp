@@ -35,11 +35,11 @@ interface TransactionLocalSource {
 
     fun getAllTransactions(): Flow<List<TransactionEntity>>
 
-    fun getTotal(
+    suspend fun getTotal(
         period: TimePeriod,
         currentDateInMillis: Long,
         transactionType: TransactionType,
-    ): Flow<TransactionTotalEntity>
+    ): TransactionTotalEntity
 
     fun getSummary(
         period: TimePeriod,
@@ -105,28 +105,23 @@ class TransactionLocalSourceImpl(
                 transactions.map(::mapTransactionEntity)
             }
 
-    override fun getTotal(
+    override suspend fun getTotal(
         period: TimePeriod,
         currentDateInMillis: Long,
         transactionType: TransactionType,
-    ): Flow<TransactionTotalEntity> {
-        val (startMillis, endMillis) = calculateTimeRange(
-            period = period,
-            currentInstant = Instant.fromEpochMilliseconds(currentDateInMillis)
-        )
-        return queries.selectTotalTransactionBetween(
-            transactionType.name,
-            startMillis,
-            endMillis
-        ).asFlow()
-            .mapToList(ioDispatcher)
-            .map { list ->
-                val result = list.first()
-                TransactionTotalEntity(
-                    totalAmount = result.total?.toLong() ?: 0,
-                    timePeriod = period
-                )
-            }
+    ): TransactionTotalEntity {
+        return withContext(ioDispatcher) {
+            val (startMillis, endMillis) = calculateTimeRange(
+                period = period,
+                currentInstant = Instant.fromEpochMilliseconds(currentDateInMillis)
+            )
+            val result = queries.selectTotalTransactionBetween(
+                transactionType.name,
+                startMillis,
+                endMillis
+            ).executeAsOneOrNull()
+            TransactionTotalEntity(result?.total?.toLong() ?: 0, period)
+        }
     }
 
     override fun getSummary(
