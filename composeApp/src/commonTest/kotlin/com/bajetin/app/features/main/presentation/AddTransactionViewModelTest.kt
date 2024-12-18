@@ -2,12 +2,15 @@ package com.bajetin.app.features.main.presentation
 
 import app.cash.turbine.test
 import com.bajetin.app.core.TestCoroutineDispatcherProvider
+import com.bajetin.app.core.utils.TimePeriod
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
+import com.bajetin.app.data.entity.TransactionSummaryEntity
+import com.bajetin.app.data.entity.TransactionTotalEntity
+import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -22,12 +25,10 @@ import kotlin.test.assertTrue
 class AddTransactionViewModelTest : KoinTest {
     private val dispatcherProvider = TestCoroutineDispatcherProvider()
     private val testDispatcher = StandardTestDispatcher()
-    private val testScope = CoroutineScope(dispatcherProvider.main)
     private val viewModel =
         AddTransactionViewModel(
             transactionRepo = TransactionRepoFake(),
             coroutineDispatcher = dispatcherProvider,
-            externalScope = testScope
         )
 
     @Test
@@ -75,7 +76,6 @@ class AddTransactionViewModelTest : KoinTest {
                 categories = TransactionCategoryEntity.initialCategories,
             ),
             dispatcherProvider,
-            this.backgroundScope
         )
 
         viewModel.categoryUiState.test {
@@ -102,7 +102,6 @@ class AddTransactionViewModelTest : KoinTest {
                 }
             ),
             dispatcherProvider,
-            testScope
         )
 
         viewModel.selectCategory(category)
@@ -169,6 +168,7 @@ class TransactionRepoFake(
     val categories: List<TransactionCategoryEntity> = emptyList(),
     val insertTransactionFake: ((catId: Long?, amount: String, dateMillis: Long?, notes: String) -> Unit)? = null,
     val transactions: List<TransactionEntity> = emptyList(),
+    val totalEntity: TransactionTotalEntity = TransactionTotalEntity(0, TimePeriod.Day)
 ) : TransactionRepo {
     private val categoryFlow = MutableStateFlow(categories)
 
@@ -181,12 +181,29 @@ class TransactionRepoFake(
         catId: Long?,
         amount: String,
         dateMillis: Long?,
-        notes: String
+        notes: String,
+        transactionType: TransactionType,
     ) {
         insertTransactionFake?.invoke(catId, amount, dateMillis, notes)
     }
 
     override fun getAllTransactions(): Flow<List<TransactionEntity>> {
         return flowOf(transactions)
+    }
+
+    override suspend fun getTotalTransactions(
+        timePeriod: TimePeriod,
+        dateMillis: Long,
+        transactionType: TransactionType
+    ): TransactionTotalEntity {
+        return totalEntity
+    }
+
+    override fun getSummaryTransactions(
+        timePeriod: TimePeriod,
+        dateMillis: Long,
+        transactionType: TransactionType
+    ): Flow<List<TransactionSummaryEntity>> {
+        return flowOf()
     }
 }

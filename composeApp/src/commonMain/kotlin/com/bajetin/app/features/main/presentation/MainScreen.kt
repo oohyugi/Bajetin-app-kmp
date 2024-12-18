@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.bajetin.app.core.utils.DateTimeUtils
 import com.bajetin.app.core.utils.ScreenSize
 import com.bajetin.app.navigation.BottomNavItem
 import com.bajetin.app.navigation.NavigationHost
@@ -34,7 +35,6 @@ import com.bajetin.app.ui.component.BottomNavBar
 import com.bajetin.app.ui.component.NavRailBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +62,7 @@ fun MainScreen() {
     val addTransactionViewModel = koinViewModel<AddTransactionViewModel>()
 
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = Clock.System.now().toEpochMilliseconds()
+        initialSelectedDateMillis = DateTimeUtils.currentInstant().toEpochMilliseconds()
     )
     val datePickerSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showDatePickerSheet by remember { mutableStateOf(false) }

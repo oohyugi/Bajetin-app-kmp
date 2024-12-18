@@ -1,56 +1,47 @@
 package com.bajetin.app.data.repository
 
+import com.bajetin.app.core.utils.TimePeriod
 import com.bajetin.app.data.entity.TransactionCategoryEntity
-import com.bajetin.app.data.entity.TransactionEntity
-import com.bajetin.app.data.local.TransactionLocalSource
-import kotlinx.coroutines.flow.Flow
+import com.bajetin.app.data.entity.TransactionSummaryEntity
+import com.bajetin.app.data.entity.TransactionTotalEntity
+import com.bajetin.app.data.entity.TransactionType
+import com.bajetin.app.di.coreModule
+import com.bajetin.app.di.dataSourceModule
+import com.bajetin.app.di.repositoryModule
+import com.bajetin.app.domain.repository.TransactionRepo
+import com.bajetin.app.testModule
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.koin.core.logger.Level
+import org.koin.mp.KoinPlatform.startKoin
+import org.koin.mp.KoinPlatform.stopKoin
+import org.koin.test.KoinTest
+import org.koin.test.inject
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
-class TransactionRepoImplTest {
+class TransactionRepoImplTest : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val dataSource = object : TransactionLocalSource {
-        private val categories = mutableListOf<TransactionCategoryEntity>()
+    private val repo: TransactionRepo by inject()
 
-        private val transactions = mutableListOf<TransactionEntity>()
-
-        override suspend fun insertCategory(label: String, emoticon: String?) {
-            categories.add(TransactionCategoryEntity(categories.size.toLong(), emoticon, label))
-        }
-
-        override fun getAllCategories(): Flow<List<TransactionCategoryEntity>> {
-            return flowOf(categories)
-        }
-
-        override suspend fun insertTransaction(
-            catId: Long,
-            amount: Long,
-            dateMillis: Long,
-            notes: String
-        ) {
-            transactions.add(
-                TransactionEntity(
-                    id = transactions.size.toLong(),
-                    category = categories.find { category -> category.id == catId },
-                    amount = amount,
-                    updatedAt = dateMillis,
-                    notes = notes
-                )
-            )
-        }
-
-        override fun getAllTransactions(): Flow<List<TransactionEntity>> {
-            return flowOf(transactions)
-        }
+    @BeforeTest
+    fun setup() {
+        startKoin(
+            modules = listOf(testModule, coreModule, dataSourceModule, repositoryModule),
+            level = Level.NONE
+        )
     }
 
-    private val repo = TransactionRepoImpl(dataSource)
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
+    }
 
     @Test
     fun `should insert adds a new category`() = runTest(testDispatcher) {
@@ -82,7 +73,7 @@ class TransactionRepoImplTest {
     @Test
     fun `should insert adds a new transactions`() = runTest(testDispatcher) {
         repo.insertCategory("Transport", "🚗")
-        repo.insertTransaction(0, amount = "10000", 1625072400000L, notes = "Kantor")
+        repo.insertTransaction(1, amount = "10000", 1625072400000L, notes = "Kantor")
 
         val transactions = repo.getAllTransactions().first()
 
@@ -91,5 +82,39 @@ class TransactionRepoImplTest {
         assertEquals("Kantor", transactions[0].notes)
         assertEquals(1625072400000L, transactions[0].updatedAt)
         assertEquals("Transport", transactions[0].category?.label)
+    }
+
+    @Test
+    fun `should get total spending transactions`() = runTest(testDispatcher) {
+        repo.insertCategory("Transport", "🚗")
+        repo.insertTransaction(0, amount = "10000", 1625072400000L, notes = "Kantor")
+
+        val transactions =
+            repo.getTotalTransactions(TimePeriod.Day, 1625072400000L, TransactionType.Expense)
+
+        assertEquals(TransactionTotalEntity(10000, TimePeriod.Day), transactions)
+    }
+
+    @Test
+    fun `should get summary spending transactions`() = runTest(testDispatcher) {
+        repo.insertCategory("Transport", "🚗")
+        repo.insertTransaction(1, amount = "10000", 1625072400000L, notes = "Kantor")
+
+        val transactions =
+            repo.getSummaryTransactions(TimePeriod.Day, 1625072400000L, TransactionType.Expense)
+                .first()
+
+        assertContains(
+            transactions,
+            TransactionSummaryEntity(
+                TransactionCategoryEntity(
+                    id = 1,
+                    emoticon = "\uD83D\uDE97",
+                    label = "Transport"
+                ),
+                10000,
+                TimePeriod.Day,
+            )
+        )
     }
 }

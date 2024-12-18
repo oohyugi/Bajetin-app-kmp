@@ -40,6 +40,11 @@ fun RalewayTypography(): Typography {
             fontSize = 24.sp,
             fontFamily = raleway
         ),
+        headlineMedium = TextStyle(
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp,
+            fontFamily = raleway
+        ),
         titleLarge = TextStyle(
             fontWeight = FontWeight.Normal,
             fontSize = 18.sp,
