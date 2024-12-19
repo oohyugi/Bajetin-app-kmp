@@ -24,7 +24,7 @@ class TransactionViewModel(
     private val transactionRepo: TransactionRepo,
 ) : ViewModel() {
 
-    private var _timePeriod = MutableStateFlow(TimePeriod.AllTime)
+    private var _timePeriod = MutableStateFlow(TimePeriod.Month)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val transactionUiState: StateFlow<TransactionUiState> =

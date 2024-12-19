@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -25,15 +25,18 @@ class AddTransactionViewModel(
     private val coroutineDispatcher: CoroutineDispatcherProvider,
 ) : ViewModel() {
 
-    private var _addTransactionUiState = MutableStateFlow(AddTransactionUiState())
-    val addTransactionUiState = _addTransactionUiState.asStateFlow()
+    private var _addTransaction = MutableStateFlow(AddTransactionModel())
 
-    val categoryUiState: StateFlow<List<TransactionCategoryEntity>> =
-        transactionRepo.getAllCategories().stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = emptyList()
-        )
+    val addTransactionUiState: StateFlow<AddTransactionUiState> =
+        transactionRepo.getAllCategories()
+            .combine(_addTransaction) { categories, addTransaction ->
+                AddTransactionUiState(addTransaction = addTransaction, categories = categories)
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000L),
+                initialValue = AddTransactionUiState()
+            )
 
     private var _uiEvent = MutableSharedFlow<AddTransactionUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -52,7 +55,7 @@ class AddTransactionViewModel(
 
     fun onClickSave() {
         viewModelScope.launch(coroutineDispatcher.main) {
-            with(_addTransactionUiState.value) {
+            with(_addTransaction.value) {
                 if (categorySelected == null) {
                     _uiEvent.emit(AddTransactionUiEvent.ShowSnackbar("Select category first"))
                     return@launch
@@ -65,25 +68,25 @@ class AddTransactionViewModel(
                 )
 
                 _uiEvent.emit(AddTransactionUiEvent.HideSheet)
-                _addTransactionUiState.value = AddTransactionUiState() // reset
+                _addTransaction.value = AddTransactionModel() // reset
             }
         }
     }
 
     fun onSelectedDate(selectedDateMillis: Long?) {
-        _addTransactionUiState.update {
+        _addTransaction.update {
             it.copy(dateMillis = selectedDateMillis)
         }
     }
 
     fun selectCategory(category: TransactionCategoryEntity) {
-        _addTransactionUiState.update {
+        _addTransaction.update {
             it.copy(categorySelected = category)
         }
     }
 
     fun addNotes(notes: String) {
-        _addTransactionUiState.update {
+        _addTransaction.update {
             it.copy(notes = notes)
         }
     }
@@ -100,7 +103,7 @@ class AddTransactionViewModel(
      * unless there's a number to work with.
      */
     private fun handleOperatorInput(symbol: String) {
-        val state = _addTransactionUiState.value
+        val state = _addTransaction.value
         val expression = state.expression.trim()
         val amount = state.amount
         val tokens = expression.toTokens()
@@ -142,7 +145,7 @@ class AddTransactionViewModel(
      * Also evaluates the expression to update the displayed amount.
      */
     private fun handleNumberInput(digitStr: String) {
-        val state = _addTransactionUiState.value
+        val state = _addTransaction.value
         val currentExpression = state.expression
         val currentAmount = state.amount
 
@@ -173,7 +176,7 @@ class AddTransactionViewModel(
      * - Otherwise, we remove one character at a time from amount and expression.
      */
     private fun handleClear() {
-        val state = _addTransactionUiState.value
+        val state = _addTransaction.value
         val currentExpression = state.expression
         val currentAmount = state.amount
 
@@ -201,10 +204,10 @@ class AddTransactionViewModel(
     private fun updateAddTransactionUiState(
         amountStr: String? = null,
         expression: String? = null,
-        isAmountCleared: Boolean? = null
+        isAmountCleared: Boolean? = null,
     ) {
-        val current = _addTransactionUiState.value
-        _addTransactionUiState.update { state ->
+        val current = _addTransaction.value
+        _addTransaction.update { state ->
             state.copy(
                 expression = expression ?: current.expression,
                 amount = amountStr ?: current.amount,

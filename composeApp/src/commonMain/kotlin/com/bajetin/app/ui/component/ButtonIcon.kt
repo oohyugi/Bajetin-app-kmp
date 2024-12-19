@@ -8,6 +8,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -23,12 +24,12 @@ fun ButtonIcon(
     Button(
         onClick = onClick,
         colors = buttonColors,
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         contentPadding = PaddingValues(horizontal = 12.dp),
         modifier = modifier,
     ) {
-        leadingIcon(Modifier.padding(end = 8.dp))
+        leadingIcon(Modifier.padding(end = 8.dp).align(Alignment.CenterVertically))
         Text(label)
-        trailingIcon(Modifier.padding(start = 8.dp))
+        trailingIcon(Modifier.padding(start = 8.dp).align(Alignment.CenterVertically))
     }
 }

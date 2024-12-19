@@ -3,8 +3,13 @@ package com.bajetin.app.features.main.presentation
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import kotlinx.serialization.Serializable
 
-@Serializable
 data class AddTransactionUiState(
+    val addTransaction: AddTransactionModel = AddTransactionModel(),
+    val categories: List<TransactionCategoryEntity> = emptyList()
+)
+
+@Serializable
+data class AddTransactionModel(
     val expression: String = "",
     val amount: String = "0",
     val isAmountCleared: Boolean = false,
