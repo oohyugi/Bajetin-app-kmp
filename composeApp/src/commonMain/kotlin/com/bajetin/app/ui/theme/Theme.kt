@@ -94,7 +94,7 @@ fun BajetinTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = RalewayTypography(),
+        typography = NutinoTypography(),
         content = content
     )
 }

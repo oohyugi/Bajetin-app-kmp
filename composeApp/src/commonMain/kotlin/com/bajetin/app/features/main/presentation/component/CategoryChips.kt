@@ -91,7 +91,7 @@ fun CategoryChip(
         leadingIcon = { leadingIcon?.let { Text(it) } },
         label = { Text(label) },
         onClick = onClick,
-        shape = MaterialTheme.shapes.medium,
+        shape = MaterialTheme.shapes.large,
         border = BorderStroke((0.5).dp, MaterialTheme.colorScheme.surfaceContainerHigh),
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = MaterialTheme.colorScheme.primary,

@@ -33,12 +33,19 @@ class AddTransactionViewModelTest : KoinTest {
 
     @Test
     fun `onKeyPress with operator appends to expression`() = runTest {
+        val viewModel = AddTransactionViewModel(
+            TransactionRepoFake(
+                categories = TransactionCategoryEntity.initialCategories,
+            ),
+            dispatcherProvider,
+        )
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "3"))
 
         viewModel.addTransactionUiState.test {
-            val state = awaitItem()
+            assertEquals(AddTransactionUiState(), awaitItem())
+            val state = awaitItem().addTransaction
             assertEquals("5 + 3", state.expression)
             assertEquals("8", state.amount) // 5 + 3 = 8
         }
@@ -46,24 +53,38 @@ class AddTransactionViewModelTest : KoinTest {
 
     @Test
     fun `onKeyPress ignores invalid operator`() = runTest {
+        val viewModel = AddTransactionViewModel(
+            TransactionRepoFake(
+                categories = TransactionCategoryEntity.initialCategories,
+            ),
+            dispatcherProvider,
+        )
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Addition, label = "+"))
 
         viewModel.addTransactionUiState.test {
+            assertEquals(AddTransactionUiState(), awaitItem())
             val state = awaitItem()
-            assertEquals("5 + ", state.expression) // "+" is not appended again
-            assertEquals("5", state.amount)
+            assertEquals("5 + ", state.addTransaction.expression) // "+" is not appended again
+            assertEquals("5", state.addTransaction.amount)
         }
     }
 
     @Test
     fun `onKeyPress handles Clear correctly`() = runTest {
+        val viewModel = AddTransactionViewModel(
+            TransactionRepoFake(
+                categories = TransactionCategoryEntity.initialCategories,
+            ),
+            dispatcherProvider,
+        )
         viewModel.onKeyPress(NumpadState(type = NumpadType.Number, label = "5"))
         viewModel.onKeyPress(NumpadState(type = NumpadType.Clear, label = ""))
 
         viewModel.addTransactionUiState.test {
-            val state = awaitItem()
+            assertEquals(AddTransactionUiState(), awaitItem())
+            val state = awaitItem().addTransaction
             assertEquals("", state.expression)
             assertEquals("0", state.amount)
         }
@@ -78,11 +99,11 @@ class AddTransactionViewModelTest : KoinTest {
             dispatcherProvider,
         )
 
-        viewModel.categoryUiState.test {
-            assertEquals(emptyList(), awaitItem())
+        viewModel.addTransactionUiState.test {
+            assertEquals(AddTransactionUiState(), awaitItem())
             assertEquals(
                 TransactionCategoryEntity.initialCategories,
-                awaitItem()
+                awaitItem().categories
             )
         }
     }
@@ -136,30 +157,56 @@ class AddTransactionViewModelTest : KoinTest {
     @Test
     fun `onSelectedDate updates dateMillis correctly`() = runTest {
         val selectedDate = 1625072400000L
-
+        val viewModel = AddTransactionViewModel(
+            TransactionRepoFake(
+                categories = TransactionCategoryEntity.initialCategories,
+            ),
+            dispatcherProvider,
+        )
         viewModel.onSelectedDate(selectedDate)
-        val uiState = viewModel.addTransactionUiState.value
-        assertEquals(uiState.dateMillis, selectedDate)
+        viewModel.addTransactionUiState.test {
+            assertEquals(AddTransactionUiState(), awaitItem())
+            val data = awaitItem().addTransaction
+            assertEquals(data.dateMillis, selectedDate)
+        }
     }
 
     @Test
     fun `selectCategory updates categorySelected correctly`() = runTest {
+        val viewModel = AddTransactionViewModel(
+            TransactionRepoFake(
+                categories = TransactionCategoryEntity.initialCategories,
+            ),
+            dispatcherProvider,
+        )
         val category = TransactionCategoryEntity(label = "Food", emoticon = "🍔")
 
         viewModel.selectCategory(category)
 
-        val uiState = viewModel.addTransactionUiState.value
-        assertEquals(uiState.categorySelected, category)
+        viewModel.addTransactionUiState.test {
+            assertEquals(AddTransactionUiState(), awaitItem())
+            val categorySelected = awaitItem().addTransaction.categorySelected
+            assertEquals(categorySelected, category)
+        }
     }
 
     @Test
     fun `addNotes updates notes correctly`() = runTest {
         val notes = "Beli garam"
+        val viewModel = AddTransactionViewModel(
+            TransactionRepoFake(
+                categories = TransactionCategoryEntity.initialCategories,
+            ),
+            dispatcherProvider,
+        )
 
         viewModel.addNotes(notes)
 
-        val uiState = viewModel.addTransactionUiState.value
-        assertEquals(uiState.notes, notes)
+        viewModel.addTransactionUiState.test {
+            assertEquals(AddTransactionUiState(), awaitItem())
+            val notes = awaitItem().addTransaction.notes
+            assertEquals(notes, notes)
+        }
     }
 }
 
