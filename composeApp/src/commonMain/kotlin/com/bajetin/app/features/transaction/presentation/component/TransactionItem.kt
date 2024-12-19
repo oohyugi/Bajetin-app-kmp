@@ -42,13 +42,13 @@ internal fun TransactionItem(
                     overflow = TextOverflow.Ellipsis,
                     color = textColor
                 )
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(4.dp))
                 Text(
                     transaction.notes.orEmpty(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = textColor.copy(alpha = 0.8F)
+                    color = textColor
                 )
             }
             Spacer(Modifier.width(16.dp))

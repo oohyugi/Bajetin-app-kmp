@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bajetin.app.core.utils.DateTimeUtils
 import com.bajetin.app.core.utils.ScreenSize
 import com.bajetin.app.navigation.BottomNavItem
+import com.bajetin.app.navigation.BottomNavItem.Companion.topLevelDestinations
 import com.bajetin.app.navigation.NavigationHost
 import com.bajetin.app.ui.component.BottomNavBar
 import com.bajetin.app.ui.component.NavRailBar
@@ -47,11 +48,6 @@ fun MainScreen() {
     )
     var screenSize by remember { mutableStateOf(ScreenSize.COMPACT) }
 
-    val topLevelDestinations = listOf(
-        BottomNavItem.Transaction,
-        BottomNavItem.Add,
-        BottomNavItem.Report,
-    )
     val currentDestination =
         navHostController.currentBackStackEntryAsState().value?.destination?.route
     val isTopLevelDestination =
@@ -65,13 +61,11 @@ fun MainScreen() {
         initialSelectedDateMillis = DateTimeUtils.currentInstant().toEpochMilliseconds()
     )
     val datePickerSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var showDatePickerSheet by remember { mutableStateOf(false) }
     var selectedDate: Long? = null
 
     // close date picker
     LaunchedEffect(datePickerState.selectedDateMillis) {
-        if (selectedDate != datePickerState.selectedDateMillis && showDatePickerSheet) {
-            showDatePickerSheet = false
+        if (selectedDate != datePickerState.selectedDateMillis && datePickerSheetState.isVisible) {
             addTransactionViewModel.onSelectedDate(datePickerState.selectedDateMillis)
             datePickerSheetState.hide()
         }
@@ -96,7 +90,6 @@ fun MainScreen() {
                         }
 
                         AddTransactionUiEvent.ShowDatePicker -> {
-                            showDatePickerSheet = true
                             scope.launch { datePickerSheetState.expand() }
                         }
 
@@ -115,7 +108,7 @@ fun MainScreen() {
                 BottomNavBar(
                     bottomNavItems = topLevelDestinations,
                     currentRoute = currentDestination,
-                    onNavBarClick = { item ->
+                    onItemSelected = { item ->
                         onNavBarClick(
                             item,
                             scope,
@@ -135,7 +128,7 @@ fun MainScreen() {
                         NavRailBar(
                             items = topLevelDestinations,
                             currentRoute = currentDestination,
-                            onNavBarClick = {
+                            onItemSelected = {
                                 onNavBarClick(
                                     item = it,
                                     scope,
@@ -152,12 +145,10 @@ fun MainScreen() {
                     )
                 }
 
-                // Bottom sheet date picker
-                if (showDatePickerSheet) {
+                if (datePickerSheetState.isVisible) {
                     ModalBottomSheet(
                         sheetState = datePickerSheetState,
                         onDismissRequest = {
-                            showDatePickerSheet = false
                             scope.launch { datePickerSheetState.hide() }
                         }
                     ) {

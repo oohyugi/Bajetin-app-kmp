@@ -20,7 +20,7 @@ fun NavRailBar(
     modifier: Modifier = Modifier,
     currentRoute: String?,
     items: List<BottomNavItem>,
-    onNavBarClick: (BottomNavItem) -> Unit,
+    onItemSelected: (BottomNavItem) -> Unit,
 ) {
     NavigationRail(
         modifier = modifier,
@@ -33,7 +33,7 @@ fun NavRailBar(
                     painter = painterResource(Res.drawable.ic_add),
                     "add transaction",
                     modifier = Modifier.size(46.dp).clickable {
-                        onNavBarClick(item)
+                        onItemSelected(item)
                     }
                 )
             } else {
@@ -56,7 +56,7 @@ fun NavRailBar(
                     },
                     alwaysShowLabel = true,
                     selected = isSelected,
-                    onClick = { onNavBarClick(item) }
+                    onClick = { onItemSelected(item) }
                 )
             }
         }

@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,13 +30,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import bajetin.composeapp.generated.resources.Res
+import bajetin.composeapp.generated.resources.all_category_act
 import bajetin.composeapp.generated.resources.ic_arrow_down
 import bajetin.composeapp.generated.resources.ic_calendar_date
 import bajetin.composeapp.generated.resources.ic_pen_square
@@ -48,15 +49,16 @@ import com.bajetin.app.features.main.presentation.component.NumpadRow
 import com.bajetin.app.ui.component.ButtonIcon
 import com.bajetin.app.ui.component.dismissKeyboardOnTap
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun AddTransactionSheet(
-    viewModel: AddTransactionViewModel,
+    viewModel: AddTransactionViewModel = koinInject(),
     modifier: Modifier = Modifier,
     onEventLaunch: (uiEvent: AddTransactionUiEvent) -> Unit,
 ) {
     val addTransactionUiState = viewModel.addTransactionUiState.collectAsStateWithLifecycle().value
-    val categoryUiState = viewModel.categoryUiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(true) {
         viewModel.uiEvent.collect { event ->
@@ -70,8 +72,8 @@ fun AddTransactionSheet(
         verticalArrangement = Arrangement.Top
     ) {
         ButtonIcon(
-            onClick = { viewModel.onClickDatePicker() },
-            label = addTransactionUiState.dateMillis.toDisplayDate(),
+            onClick = viewModel::onClickDatePicker,
+            label = addTransactionUiState.addTransaction.dateMillis.toDisplayDate(),
             leadingIcon = {
                 Icon(
                     painter = painterResource(Res.drawable.ic_calendar_date),
@@ -85,11 +87,11 @@ fun AddTransactionSheet(
                     painter = painterResource(Res.drawable.ic_arrow_down),
                     "date",
                     tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = modifier.size(18.dp)
+                    modifier = modifier
                 )
             },
             buttonColors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
                 contentColor = MaterialTheme.colorScheme.onSurface
             ),
             modifier = Modifier.align(alignment = Alignment.Start).padding(horizontal = 16.dp)
@@ -97,15 +99,17 @@ fun AddTransactionSheet(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        AmountExpressionColumn(
-            addTransactionUiState.expression,
-            addTransactionUiState.amount,
-            addTransactionUiState.expression.containsOperators()
-        )
+        with(addTransactionUiState.addTransaction) {
+            AmountExpressionColumn(
+                expression,
+                amount,
+                expression.containsOperators()
+            )
+        }
 
-        Spacer(Modifier.size(12.dp))
+        Spacer(Modifier.size(24.dp))
         NoteTextField(
-            value = addTransactionUiState.notes,
+            value = addTransactionUiState.addTransaction.notes,
             onValueChange = {
                 if (it.length <= Constants.MaxLengthNote) viewModel.addNotes(it)
             },
@@ -119,24 +123,24 @@ fun AddTransactionSheet(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CategoryChips(
-                categories = categoryUiState,
-                categorySelected = addTransactionUiState.categorySelected,
+                categories = addTransactionUiState.categories.take(3),
+                categorySelected = addTransactionUiState.addTransaction.categorySelected,
                 onClickCategory = viewModel::selectCategory,
                 modifier = Modifier.weight(1F)
             )
             ButtonIcon(
                 onClick = {},
-                label = "More",
+                label = stringResource(Res.string.all_category_act),
                 trailingIcon = { modifier ->
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_down),
                         "category",
                         tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = modifier.align(Alignment.CenterVertically)
+                        modifier = modifier
                     )
                 },
                 buttonColors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
                     contentColor = MaterialTheme.colorScheme.onSurface
                 ),
                 modifier = Modifier
@@ -256,7 +260,7 @@ private fun NoteTextField(
             if (value.isEmpty()) {
                 Text(
                     text = "Add notes..",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8F),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )

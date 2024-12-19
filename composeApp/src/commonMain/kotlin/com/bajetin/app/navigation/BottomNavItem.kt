@@ -17,4 +17,12 @@ sealed class BottomNavItem(
 
     data object Add : BottomNavItem(route = "", "", Res.drawable.ic_add)
     data object Report : BottomNavItem(route = "/report", "Report", Res.drawable.ic_graph)
+
+    companion object {
+        val topLevelDestinations = listOf(
+            Transaction,
+            Add,
+            Report,
+        )
+    }
 }

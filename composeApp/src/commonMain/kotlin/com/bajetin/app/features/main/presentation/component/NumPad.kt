@@ -31,7 +31,7 @@ fun NumPad(state: NumpadState, onKeyPress: (NumpadState) -> Unit, modifier: Modi
                 style = if (state.type.symbol.isOperator() || state.label == "⌫") {
                     MaterialTheme.typography.headlineSmall
                 } else {
-                    MaterialTheme.typography.titleMedium
+                    MaterialTheme.typography.titleLarge
                 },
                 textAlign = TextAlign.Center,
             )
