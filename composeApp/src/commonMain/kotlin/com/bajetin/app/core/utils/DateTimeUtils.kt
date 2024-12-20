@@ -42,8 +42,8 @@ private val DisplayDate: DateTimeFormat<LocalDate> by lazy {
 
 object DateTimeUtils {
 
-    fun currentInstant(): Instant {
-        val instant = currentDateTime().toInstant(TimeZone.currentSystemDefault())
+    fun currentInstant(timeZone: TimeZone = TimeZone.currentSystemDefault()): Instant {
+        val instant = currentDateTime().toInstant(timeZone)
         return instant
     }
 
@@ -55,6 +55,13 @@ object DateTimeUtils {
     fun currentDate(): LocalDate {
         return currentDateTime().date
     }
+}
+
+fun Long?.toLocalDate(): LocalDate {
+    if (this == null) return DateTimeUtils.currentDate()
+    val instant = Instant.fromEpochMilliseconds(this)
+    val localDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+    return localDate
 }
 
 fun Long?.toDisplayDate(): String {

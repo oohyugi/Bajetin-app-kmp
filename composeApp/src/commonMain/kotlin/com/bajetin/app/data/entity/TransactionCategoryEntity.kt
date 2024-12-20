@@ -52,6 +52,10 @@ data class TransactionCategoryEntity(val id: Long = 0, val emoticon: String?, va
                 emoticon = "\uD83C\uDFE0", // House emoji
                 label = "Household"
             ),
+            TransactionCategoryEntity(
+                emoticon = "✏\uFE0F", // Pencil emoji
+                label = "Other"
+            ),
         )
     }
 }

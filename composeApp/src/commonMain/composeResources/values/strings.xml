@@ -3,5 +3,7 @@
     <string name="upcoming_title">Upcoming</string>
     <string name="today_title">Today</string>
     <string name="spent_title">Spent</string>
-    <string name="all_category_act">See More</string>
+    <string name="all_category_act">Expand</string>
+    <string name="add_category_title">Can't find a suitable category? Feel free to add your own!</string>
+    <string name="add_category_act">Add a new category</string>
 </resources>

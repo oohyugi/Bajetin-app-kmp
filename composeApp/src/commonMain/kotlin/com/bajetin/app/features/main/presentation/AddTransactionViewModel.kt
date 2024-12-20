@@ -8,6 +8,7 @@ import com.bajetin.app.core.utils.isOperator
 import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.domain.CoroutineDispatcherProvider
 import com.bajetin.app.domain.repository.TransactionRepo
+import com.bajetin.app.features.main.presentation.addTransaction.AddTransactionUiEvent
 import com.bajetin.app.features.main.presentation.component.NumpadState
 import com.bajetin.app.features.main.presentation.component.NumpadType
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,7 +58,7 @@ class AddTransactionViewModel(
         viewModelScope.launch(coroutineDispatcher.main) {
             with(_addTransaction.value) {
                 if (categorySelected == null) {
-                    _uiEvent.emit(AddTransactionUiEvent.ShowSnackbar("Select category first"))
+                    _uiEvent.emit(AddTransactionUiEvent.ExpandCategory)
                     return@launch
                 }
                 transactionRepo.insertTransaction(
@@ -228,5 +229,11 @@ class AddTransactionViewModel(
      */
     private fun String.dropLastOrDefault(defaultValue: String): String {
         return if (isNotEmpty()) dropLast(1).ifEmpty { defaultValue } else defaultValue
+    }
+
+    fun expandCategory() {
+        viewModelScope.launch {
+            _uiEvent.emit(AddTransactionUiEvent.ExpandCategory)
+        }
     }
 }

@@ -20,7 +20,6 @@ import org.koin.dsl.module
 
 private const val IODispatcher = "IODispatcher"
 private const val DefaultDispatcher = "DefaultDispatcher"
-
 val coreModule = module {
     single {
         BajetinDatabase(get())

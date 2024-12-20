@@ -3,6 +3,7 @@ package com.bajetin.app.features.transaction.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bajetin.app.core.UiState
+import com.bajetin.app.core.utils.DateTimeUtils
 import com.bajetin.app.core.utils.TimePeriod
 import com.bajetin.app.core.utils.toDisplayDate
 import com.bajetin.app.data.entity.TransactionEntity
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.Clock
 
 class TransactionViewModel(
     private val transactionRepo: TransactionRepo,
@@ -36,7 +36,7 @@ class TransactionViewModel(
 
                 val total = transactionRepo.getTotalTransactions(
                     timePeriod = period,
-                    dateMillis = Clock.System.now().toEpochMilliseconds(),
+                    dateMillis = DateTimeUtils.currentInstant().toEpochMilliseconds(),
                     transactionType = TransactionType.Expense
                 )
                 emit(
