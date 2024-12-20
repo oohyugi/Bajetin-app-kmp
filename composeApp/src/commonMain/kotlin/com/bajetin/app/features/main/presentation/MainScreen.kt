@@ -35,6 +35,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bajetin.app.core.utils.DateTimeUtils
 import com.bajetin.app.core.utils.ScreenSize
+import com.bajetin.app.core.utils.toLocalDate
 import com.bajetin.app.features.main.presentation.addTransaction.AddTransactionSheet
 import com.bajetin.app.features.main.presentation.addTransaction.AddTransactionUiEvent
 import com.bajetin.app.features.main.presentation.category.CategorySheet
@@ -45,6 +46,7 @@ import com.bajetin.app.ui.component.BottomNavBar
 import com.bajetin.app.ui.component.NavRailBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,7 +72,7 @@ fun MainScreen() {
         addTransactionViewModel.addTransactionUiState.collectAsStateWithLifecycle().value
 
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = DateTimeUtils.currentInstant().toEpochMilliseconds()
+        initialSelectedDateMillis = DateTimeUtils.currentInstant(TimeZone.UTC).toEpochMilliseconds(),
     )
     val datePickerSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val categorySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -79,7 +81,14 @@ fun MainScreen() {
     // close date picker
     LaunchedEffect(datePickerState.selectedDateMillis) {
         if (selectedDate != datePickerState.selectedDateMillis && datePickerSheetState.isVisible) {
-            addTransactionViewModel.onSelectedDate(datePickerState.selectedDateMillis)
+            selectedDate =
+                if (datePickerState.selectedDateMillis.toLocalDate() == DateTimeUtils.currentDate()) {
+                    DateTimeUtils.currentInstant()
+                        .toEpochMilliseconds()
+                } else {
+                    datePickerState.selectedDateMillis
+                }
+            addTransactionViewModel.onSelectedDate(selectedDate)
             datePickerSheetState.hide()
         }
         selectedDate = datePickerState.selectedDateMillis
