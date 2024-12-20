@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.BottomSheetScaffold
@@ -91,7 +92,7 @@ fun MainScreen() {
         sheetShadowElevation = 4.dp,
         sheetContent = {
             AddTransactionSheet(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars).fillMaxWidth(),
                 viewModel = addTransactionViewModel,
                 onEventLaunch = { event ->
                     handleAddTransactionEvent(
