@@ -1,4 +1,4 @@
-package com.bajetin.app.features.main.presentation
+package com.bajetin.app.features.main.presentation.addTransaction
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -16,9 +16,12 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
@@ -36,20 +39,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import bajetin.composeapp.generated.resources.Res
-import bajetin.composeapp.generated.resources.all_category_act
 import bajetin.composeapp.generated.resources.ic_arrow_down
 import bajetin.composeapp.generated.resources.ic_calendar_date
 import bajetin.composeapp.generated.resources.ic_pen_square
+import bajetin.composeapp.generated.resources.ic_widget
 import com.bajetin.app.core.utils.Constants
 import com.bajetin.app.core.utils.containsOperators
 import com.bajetin.app.core.utils.formatCurrency
 import com.bajetin.app.core.utils.toDisplayDate
+import com.bajetin.app.features.main.presentation.AddTransactionViewModel
 import com.bajetin.app.features.main.presentation.component.CategoryChips
 import com.bajetin.app.features.main.presentation.component.NumpadRow
 import com.bajetin.app.ui.component.ButtonIcon
 import com.bajetin.app.ui.component.dismissKeyboardOnTap
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -60,16 +63,30 @@ fun AddTransactionSheet(
 ) {
     val addTransactionUiState = viewModel.addTransactionUiState.collectAsStateWithLifecycle().value
 
+    val lazyListState = rememberLazyListState()
     LaunchedEffect(true) {
         viewModel.uiEvent.collect { event ->
             onEventLaunch(event)
         }
     }
 
+    val categorySelected = addTransactionUiState.addTransaction.categorySelected
+    LaunchedEffect(categorySelected) {
+        if (categorySelected != null) {
+            lazyListState.animateScrollToItem(
+                addTransactionUiState.categories.indexOf(
+                    categorySelected
+                ),
+                scrollOffset = 16
+            )
+        }
+    }
+
     Column(
-        modifier = modifier.dismissKeyboardOnTap(),
+        modifier = modifier.dismissKeyboardOnTap().padding(top = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
+
     ) {
         ButtonIcon(
             onClick = viewModel::onClickDatePicker,
@@ -97,7 +114,7 @@ fun AddTransactionSheet(
             modifier = Modifier.align(alignment = Alignment.Start).padding(horizontal = 16.dp)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         with(addTransactionUiState.addTransaction) {
             AmountExpressionColumn(
@@ -107,7 +124,7 @@ fun AddTransactionSheet(
             )
         }
 
-        Spacer(Modifier.size(24.dp))
+        Spacer(Modifier.size(32.dp))
         NoteTextField(
             value = addTransactionUiState.addTransaction.notes,
             onValueChange = {
@@ -116,37 +133,33 @@ fun AddTransactionSheet(
             modifier = Modifier.fillMaxWidth()
                 .wrapContentSize()
         )
-        Spacer(Modifier.size(16.dp))
+        Spacer(Modifier.size(24.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             CategoryChips(
-                categories = addTransactionUiState.categories.take(3),
-                categorySelected = addTransactionUiState.addTransaction.categorySelected,
+                categories = addTransactionUiState.categories,
+                categorySelected = categorySelected,
                 onClickCategory = viewModel::selectCategory,
-                modifier = Modifier.weight(1F)
+                lazyListState = lazyListState,
+                modifier = Modifier.weight(1F),
             )
-            ButtonIcon(
-                onClick = {},
-                label = stringResource(Res.string.all_category_act),
-                trailingIcon = { modifier ->
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_down),
-                        "category",
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = modifier
-                    )
-                },
-                buttonColors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                modifier = Modifier
-            )
+            IconButton(
+                onClick = viewModel::expandCategory,
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
+                )
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_widget),
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            }
         }
-        Spacer(Modifier.size(16.dp))
+        Spacer(Modifier.size(24.dp))
 
         NumpadRow(
             onKeyPress = viewModel::onKeyPress,
@@ -210,9 +223,10 @@ fun AmountText(text: String) {
         )
     }
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(end = 16.dp)) {
         Text(
             text = text.dropLast(1),
+            maxLines = 1,
             style = MaterialTheme.typography.displayMedium
         )
         AnimatedLastCharacter(text.last(), lastCharOffset.value)
@@ -223,6 +237,7 @@ fun AmountText(text: String) {
 private fun AnimatedLastCharacter(char: Char, offsetY: Float) {
     Text(
         text = char.toString(),
+        maxLines = 1,
         modifier = Modifier
             .offset(y = offsetY.dp)
             .graphicsLayer {
