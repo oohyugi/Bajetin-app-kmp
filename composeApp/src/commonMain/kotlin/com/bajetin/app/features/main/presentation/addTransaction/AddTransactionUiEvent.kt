@@ -1,7 +1,7 @@
-package com.bajetin.app.features.main.presentation
+package com.bajetin.app.features.main.presentation.addTransaction
 
 sealed class AddTransactionUiEvent {
-    data class ShowSnackbar(val message: String) : AddTransactionUiEvent()
     data object HideSheet : AddTransactionUiEvent()
     data object ShowDatePicker : AddTransactionUiEvent()
+    data object ExpandCategory : AddTransactionUiEvent()
 }

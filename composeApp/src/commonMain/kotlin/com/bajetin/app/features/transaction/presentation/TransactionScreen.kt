@@ -112,7 +112,7 @@ private fun LazyListScope.transactionItems(groupedTransaction: List<GroupedTrans
                     )
                 )
                     .background(
-                        color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
+                        color = MaterialTheme.colorScheme.surfaceColorAtElevation((0.1).dp),
                     ).padding(start = 16.dp, bottom = 32.dp, end = 16.dp, top = 16.dp)
             )
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -16,25 +17,22 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bajetin.app.data.entity.TransactionCategoryEntity
-import kotlinx.coroutines.launch
 
 @Composable
 fun CategoryChips(
     categories: List<TransactionCategoryEntity>,
     categorySelected: TransactionCategoryEntity?,
     onClickCategory: (TransactionCategoryEntity) -> Unit,
+    lazyListState: LazyListState = rememberLazyListState(),
+
     modifier: Modifier = Modifier
 ) {
-    val lazyListState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
-
     Box(modifier = modifier) {
         LazyRow(state = lazyListState, contentPadding = PaddingValues(start = 16.dp)) {
             itemsIndexed(items = categories) { index, item ->
@@ -44,9 +42,6 @@ fun CategoryChips(
                     isSelected = categorySelected == item,
                     onClick = {
                         onClickCategory(item)
-                        scope.launch {
-                            lazyListState.animateScrollToItem(index, scrollOffset = 16)
-                        }
                     },
                     modifier = Modifier.height(ButtonDefaults.MinHeight)
                 )
