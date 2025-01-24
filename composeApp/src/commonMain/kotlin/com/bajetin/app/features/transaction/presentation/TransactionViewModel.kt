@@ -10,15 +10,18 @@ import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.data.entity.TransactionType
 import com.bajetin.app.domain.repository.TransactionRepo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class TransactionViewModel(
     private val transactionRepo: TransactionRepo,
@@ -64,6 +67,9 @@ class TransactionViewModel(
                 )
             )
 
+    private var _uiEvent = MutableSharedFlow<TransactionUiEvent>()
+    val uiEvent = _uiEvent.asSharedFlow()
+
     fun changeTimePeriod() {
         _timePeriod.update { currentPeriod ->
             val currentIndex = TimePeriod.entries.indexOf(currentPeriod)
@@ -80,5 +86,11 @@ class TransactionViewModel(
                     transactions = it.value
                 )
             }
+    }
+
+    fun onItemClick(transaction: TransactionEntity) {
+        viewModelScope.launch {
+            _uiEvent.emit(TransactionUiEvent.Clicked(transaction))
+        }
     }
 }

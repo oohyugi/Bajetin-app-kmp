@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -42,6 +43,7 @@ import com.bajetin.app.features.main.presentation.category.CategorySheet
 import com.bajetin.app.navigation.BottomNavItem
 import com.bajetin.app.navigation.BottomNavItem.Companion.topLevelDestinations
 import com.bajetin.app.navigation.NavigationHost
+import com.bajetin.app.navigation.SelectedTransactionKey
 import com.bajetin.app.ui.component.BottomNavBar
 import com.bajetin.app.ui.component.NavRailBar
 import kotlinx.coroutines.CoroutineScope
@@ -72,11 +74,35 @@ fun MainScreen() {
         addTransactionViewModel.addTransactionUiState.collectAsStateWithLifecycle().value
 
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = DateTimeUtils.currentInstant(TimeZone.UTC).toEpochMilliseconds(),
+        initialSelectedDateMillis = DateTimeUtils.currentInstant(TimeZone.UTC)
+            .toEpochMilliseconds(),
     )
     val datePickerSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val categorySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var selectedDate: Long? = null
+
+    // Listen for selected item in transaction history via SavedStateHandle
+    val selectedTransaction = navHostController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow<Long?>(SelectedTransactionKey, null)?.collectAsStateWithLifecycle()?.value
+
+    // show transaction bottom sheet with selected item
+    LaunchedEffect(selectedTransaction) {
+        selectedTransaction?.let {
+            scaffoldState.bottomSheetState.expand()
+        }
+    }
+
+    // clear data when bottom state not expanded
+    LaunchedEffect(scaffoldState.bottomSheetState.currentValue) {
+        if (scaffoldState.bottomSheetState.currentValue != SheetValue.Expanded) {
+            addTransactionViewModel.resetSelectedTransaction()
+            navHostController.currentBackStackEntry?.savedStateHandle?.set(
+                SelectedTransactionKey,
+                null
+            )
+        }
+    }
 
     // close date picker
     LaunchedEffect(datePickerState.selectedDateMillis) {
@@ -103,13 +129,18 @@ fun MainScreen() {
             AddTransactionSheet(
                 modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars).fillMaxWidth(),
                 viewModel = addTransactionViewModel,
+                currentTransactionId = selectedTransaction,
                 onEventLaunch = { event ->
                     handleAddTransactionEvent(
                         event,
                         scope,
-                        scaffoldState,
                         datePickerSheetState,
-                        categorySheetState
+                        categorySheetState,
+                        onHideSheet = {
+                            scope.launch {
+                                scaffoldState.bottomSheetState.hide()
+                            }
+                        }
                     )
                 },
             )
@@ -208,15 +239,13 @@ fun MainScreen() {
 private fun handleAddTransactionEvent(
     event: AddTransactionUiEvent,
     scope: CoroutineScope,
-    scaffoldState: BottomSheetScaffoldState,
     datePickerSheetState: SheetState,
-    categorySheetState: SheetState
+    categorySheetState: SheetState,
+    onHideSheet: () -> Unit,
 ) {
     when (event) {
         AddTransactionUiEvent.HideSheet -> {
-            scope.launch {
-                scaffoldState.bottomSheetState.hide()
-            }
+            onHideSheet()
         }
 
         AddTransactionUiEvent.ShowDatePicker -> {

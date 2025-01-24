@@ -42,6 +42,7 @@ import bajetin.composeapp.generated.resources.Res
 import bajetin.composeapp.generated.resources.ic_arrow_down
 import bajetin.composeapp.generated.resources.ic_calendar_date
 import bajetin.composeapp.generated.resources.ic_pen_square
+import bajetin.composeapp.generated.resources.ic_trash
 import bajetin.composeapp.generated.resources.ic_widget
 import com.bajetin.app.core.utils.Constants
 import com.bajetin.app.core.utils.containsOperators
@@ -52,12 +53,14 @@ import com.bajetin.app.features.main.presentation.component.CategoryChips
 import com.bajetin.app.features.main.presentation.component.NumpadRow
 import com.bajetin.app.ui.component.ButtonIcon
 import com.bajetin.app.ui.component.dismissKeyboardOnTap
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 
 @Composable
 fun AddTransactionSheet(
     viewModel: AddTransactionViewModel = koinInject(),
+    currentTransactionId: Long?,
     modifier: Modifier = Modifier,
     onEventLaunch: (uiEvent: AddTransactionUiEvent) -> Unit,
 ) {
@@ -70,9 +73,16 @@ fun AddTransactionSheet(
         }
     }
 
+    LaunchedEffect(currentTransactionId) {
+        currentTransactionId?.let {
+            viewModel.getTransaction(it)
+        }
+    }
+
     val categorySelected = addTransactionUiState.addTransaction.categorySelected
     LaunchedEffect(categorySelected) {
         if (categorySelected != null) {
+            delay(100)
             lazyListState.animateScrollToItem(
                 addTransactionUiState.categories.indexOf(
                     categorySelected
@@ -88,31 +98,42 @@ fun AddTransactionSheet(
         verticalArrangement = Arrangement.Top
 
     ) {
-        ButtonIcon(
-            onClick = viewModel::onClickDatePicker,
-            label = addTransactionUiState.addTransaction.dateMillis.toDisplayDate(),
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_calendar_date),
-                    "date",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = it
-                )
-            },
-            trailingIcon = { modifier ->
-                Icon(
-                    painter = painterResource(Res.drawable.ic_arrow_down),
-                    "date",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = modifier
-                )
-            },
-            buttonColors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ),
-            modifier = Modifier.align(alignment = Alignment.Start).padding(horizontal = 16.dp)
-        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth().align(alignment = Alignment.Start)
+                .padding(horizontal = 16.dp)
+        ) {
+            ButtonIcon(
+                onClick = viewModel::onClickDatePicker,
+                label = addTransactionUiState.addTransaction.dateMillis.toDisplayDate(),
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_calendar_date),
+                        "date",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = it
+                    )
+                },
+                trailingIcon = { modifier ->
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_arrow_down),
+                        "date",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = modifier
+                    )
+                },
+                buttonColors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ),
+            )
+
+            if (currentTransactionId != null) {
+                DeleteButton(currentTransactionId) {
+                    viewModel.deleteItem(currentTransactionId)
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -167,6 +188,29 @@ fun AddTransactionSheet(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
+}
+
+@Composable
+private fun DeleteButton(
+    currentTransactionId: Long,
+    onClick: (Long) -> Unit,
+) {
+    ButtonIcon(
+        onClick = { onClick(currentTransactionId) },
+        label = "Delete",
+        buttonColors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        leadingIcon = {
+            Icon(
+                painterResource(Res.drawable.ic_trash),
+                "Delete",
+                tint = MaterialTheme.colorScheme.error,
+                modifier = it
+            )
+        }
+    )
 }
 
 @Composable

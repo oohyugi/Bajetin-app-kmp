@@ -16,7 +16,14 @@ fun NavigationHost(navHostController: NavHostController) {
     ) {
         composable(route = BottomNavItem.Transaction.route) {
             val viewModel: TransactionViewModel = koinInject()
-            TransactionHistoryScreen(viewModel)
+            TransactionHistoryScreen(viewModel, onItemClick = {
+                navHostController.currentBackStackEntry?.savedStateHandle?.set(
+                    SelectedTransactionKey,
+                    it
+                )
+            })
         }
     }
 }
+
+const val SelectedTransactionKey = "selectedTransaction"

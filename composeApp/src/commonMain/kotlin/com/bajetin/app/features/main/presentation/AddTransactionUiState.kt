@@ -10,6 +10,7 @@ data class AddTransactionUiState(
 
 @Serializable
 data class AddTransactionModel(
+    val id: Long? = null,
     val expression: String = "",
     val amount: String = "0",
     val isAmountCleared: Boolean = false,

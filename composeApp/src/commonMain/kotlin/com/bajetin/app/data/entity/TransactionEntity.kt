@@ -8,5 +8,6 @@ data class TransactionEntity(
     val category: TransactionCategoryEntity? = null,
     val amount: Long = 0,
     val updatedAt: Long?,
-    val notes: String? = null
+    val notes: String? = null,
+    val type: TransactionType = TransactionType.Expense
 )

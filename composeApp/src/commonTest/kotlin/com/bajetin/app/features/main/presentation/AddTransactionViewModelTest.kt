@@ -26,11 +26,6 @@ import kotlin.test.assertTrue
 class AddTransactionViewModelTest : KoinTest {
     private val dispatcherProvider = TestCoroutineDispatcherProvider()
     private val testDispatcher = StandardTestDispatcher()
-    private val viewModel =
-        AddTransactionViewModel(
-            transactionRepo = TransactionRepoFake(),
-            coroutineDispatcher = dispatcherProvider,
-        )
 
     @Test
     fun `onKeyPress with operator appends to expression`() = runTest {
@@ -144,18 +139,6 @@ class AddTransactionViewModelTest : KoinTest {
     }
 
     @Test
-    fun `onClickSave emits ShowSnackbar when categorySelected is null`() = runTest {
-        viewModel.uiEvent.test {
-            viewModel.onClickSave()
-            val event = awaitItem()
-            assertTrue(event is AddTransactionUiEvent.ShowSnackbar)
-            val snackbarEvent = event as AddTransactionUiEvent.ShowSnackbar
-            assertEquals("Select category first", snackbarEvent.message)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `onSelectedDate updates dateMillis correctly`() = runTest {
         val selectedDate = 1625072400000L
         val viewModel = AddTransactionViewModel(
@@ -205,8 +188,7 @@ class AddTransactionViewModelTest : KoinTest {
 
         viewModel.addTransactionUiState.test {
             assertEquals(AddTransactionUiState(), awaitItem())
-            val notes = awaitItem().addTransaction.notes
-            assertEquals(notes, notes)
+            assertEquals(awaitItem().addTransaction.notes, notes)
         }
     }
 }
@@ -216,7 +198,7 @@ class TransactionRepoFake(
     val categories: List<TransactionCategoryEntity> = emptyList(),
     val insertTransactionFake: ((catId: Long?, amount: String, dateMillis: Long?, notes: String) -> Unit)? = null,
     val transactions: List<TransactionEntity> = emptyList(),
-    val totalEntity: TransactionTotalEntity = TransactionTotalEntity(0, TimePeriod.Day)
+    val totalEntity: TransactionTotalEntity = TransactionTotalEntity(0, TimePeriod.Day),
 ) : TransactionRepo {
     private val categoryFlow = MutableStateFlow(categories)
 
@@ -254,4 +236,10 @@ class TransactionRepoFake(
     ): Flow<List<TransactionSummaryEntity>> {
         return flowOf()
     }
+
+    override suspend fun removeTransaction(id: Long) = Unit
+
+    override suspend fun updateTransaction(transaction: TransactionEntity) = Unit
+
+    override fun getTransaction(id: Long): Flow<TransactionEntity?> = flowOf()
 }

@@ -6,6 +6,7 @@ import com.bajetin.app.core.utils.containsOperators
 import com.bajetin.app.core.utils.evaluateExpression
 import com.bajetin.app.core.utils.isOperator
 import com.bajetin.app.data.entity.TransactionCategoryEntity
+import com.bajetin.app.data.entity.TransactionEntity
 import com.bajetin.app.domain.CoroutineDispatcherProvider
 import com.bajetin.app.domain.repository.TransactionRepo
 import com.bajetin.app.features.main.presentation.addTransaction.AddTransactionUiEvent
@@ -27,17 +28,17 @@ class AddTransactionViewModel(
 ) : ViewModel() {
 
     private var _addTransaction = MutableStateFlow(AddTransactionModel())
-
-    val addTransactionUiState: StateFlow<AddTransactionUiState> =
-        transactionRepo.getAllCategories()
-            .combine(_addTransaction) { categories, addTransaction ->
-                AddTransactionUiState(addTransaction = addTransaction, categories = categories)
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000L),
-                initialValue = AddTransactionUiState()
-            )
+    val addTransactionUiState: StateFlow<AddTransactionUiState> = combine(
+        transactionRepo.getAllCategories(),
+        _addTransaction,
+    ) { categories, addTransaction ->
+        AddTransactionUiState(addTransaction = addTransaction, categories = categories)
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = AddTransactionUiState()
+        )
 
     private var _uiEvent = MutableSharedFlow<AddTransactionUiEvent>()
     val uiEvent = _uiEvent.asSharedFlow()
@@ -61,15 +62,27 @@ class AddTransactionViewModel(
                     _uiEvent.emit(AddTransactionUiEvent.ExpandCategory)
                     return@launch
                 }
-                transactionRepo.insertTransaction(
-                    catId = categorySelected.id,
-                    amount = amount,
-                    dateMillis = dateMillis,
-                    notes = notes
-                )
 
+                if (id == null) {
+                    transactionRepo.insertTransaction(
+                        catId = categorySelected.id,
+                        amount = amount,
+                        dateMillis = dateMillis,
+                        notes = notes
+                    )
+                } else {
+                    transactionRepo.updateTransaction(
+                        TransactionEntity(
+                            id = id,
+                            category = categorySelected,
+                            amount = amount.toLongOrNull() ?: 0,
+                            updatedAt = dateMillis,
+                            notes = notes
+                        )
+                    )
+                }
                 _uiEvent.emit(AddTransactionUiEvent.HideSheet)
-                _addTransaction.value = AddTransactionModel() // reset
+                resetSelectedTransaction()
             }
         }
     }
@@ -234,6 +247,37 @@ class AddTransactionViewModel(
     fun expandCategory() {
         viewModelScope.launch {
             _uiEvent.emit(AddTransactionUiEvent.ExpandCategory)
+        }
+    }
+
+    fun getTransaction(id: Long) {
+        viewModelScope.launch {
+            transactionRepo.getTransaction(id).collect { transaction ->
+                transaction?.let {
+                    _addTransaction.update { state ->
+                        state.copy(
+                            id = transaction.id,
+                            amount = transaction.amount.toString(),
+                            dateMillis = transaction.updatedAt,
+                            categorySelected = transaction.category,
+                            notes = transaction.notes ?: ""
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    fun resetSelectedTransaction() {
+        viewModelScope.launch {
+            _addTransaction.emit(AddTransactionModel())
+        }
+    }
+
+    fun deleteItem(currentTransactionId: Long) {
+        viewModelScope.launch {
+            transactionRepo.removeTransaction(currentTransactionId)
+            _uiEvent.emit(AddTransactionUiEvent.HideSheet)
         }
     }
 }
