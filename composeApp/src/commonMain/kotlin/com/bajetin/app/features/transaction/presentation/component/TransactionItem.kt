@@ -16,12 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bajetin.app.core.utils.formatCurrency
-import com.bajetin.app.data.entity.TransactionCategoryEntity
 import com.bajetin.app.data.entity.TransactionEntity
 
 @Composable
 internal fun TransactionItem(
-    category: TransactionCategoryEntity?,
     transaction: TransactionEntity,
     textColor: Color = MaterialTheme.colorScheme.onSurface,
     modifier: Modifier = Modifier
@@ -36,7 +34,7 @@ internal fun TransactionItem(
                 verticalArrangement = Arrangement.Top
             ) {
                 Text(
-                    "${category?.emoticon} ${category?.label}",
+                    "${transaction.category?.emoticon} ${transaction.category?.label}",
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

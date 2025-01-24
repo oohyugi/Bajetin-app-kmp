@@ -50,6 +50,7 @@ interface TransactionLocalSource {
 
     suspend fun removeTransaction(id: Long)
     suspend fun updateTransaction(transaction: TransactionEntity)
+    fun getTransaction(id: Long): Flow<TransactionEntity?>
 }
 
 class TransactionLocalSourceImpl(
@@ -164,6 +165,30 @@ class TransactionLocalSourceImpl(
             )
         }
     }
+
+    override fun getTransaction(id: Long): Flow<TransactionEntity?> {
+        return queries.selectTransaction(id).asFlow().map {
+            val transactionsWithCategories = it.executeAsOneOrNull()
+
+            if (transactionsWithCategories != null) {
+                TransactionEntity(
+                    id = transactionsWithCategories.id,
+                    category = TransactionCategoryEntity(
+                        transactionsWithCategories.category_id,
+                        transactionsWithCategories.emoticon,
+                        transactionsWithCategories.label.orEmpty()
+                    ),
+                    updatedAt = transactionsWithCategories.updated_at,
+                    amount = transactionsWithCategories.amount ?: 0,
+                    notes = transactionsWithCategories.note,
+                    type = TransactionType.valueOf(transactionsWithCategories.type)
+                )
+            } else {
+                null
+            }
+        }
+    }
+
     private suspend fun insertDefaultCategories() {
         TransactionCategoryEntity.initialCategories.forEach {
             insertCategory(it.label, it.emoticon)

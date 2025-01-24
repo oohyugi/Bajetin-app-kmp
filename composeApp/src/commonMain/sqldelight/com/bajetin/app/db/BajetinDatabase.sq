@@ -38,6 +38,12 @@ WHERE id = :id;
 selectAllTransaction:
 SELECT * FROM transactions;
 
+selectTransaction:
+SELECT transactions.*, categories.*
+FROM transactions
+LEFT JOIN categories ON transactions.category_id = categories.id
+WHERE transactions.id = :id;
+
 selectAllTransactionsWithCategory:
 SELECT
     transactions.*, categories.*

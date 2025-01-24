@@ -36,4 +36,6 @@ interface TransactionRepo {
     suspend fun removeTransaction(id: Long)
 
     suspend fun updateTransaction(transaction: TransactionEntity)
+
+    fun getTransaction(id: Long): Flow<TransactionEntity?>
 }

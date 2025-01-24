@@ -62,4 +62,8 @@ class TransactionRepoImpl(
     override suspend fun updateTransaction(transaction: TransactionEntity) {
         localSource.updateTransaction(transaction)
     }
+
+    override fun getTransaction(id: Long): Flow<TransactionEntity?> {
+        return localSource.getTransaction(id)
+    }
 }
