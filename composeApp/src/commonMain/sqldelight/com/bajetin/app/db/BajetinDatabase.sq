@@ -25,6 +25,16 @@ INSERT INTO transactions (
     updated_at
 ) VALUES (?, ?, ?, ?, ?, ?);
 
+updateTransaction:
+UPDATE transactions
+SET
+    note = :note,
+    amount = :amount,
+    category_id = :categoryId,
+    type = :type,
+    updated_at = :updatedAt
+WHERE id = :id;
+
 selectAllTransaction:
 SELECT * FROM transactions;
 
@@ -34,6 +44,10 @@ SELECT
 FROM transactions
 LEFT JOIN categories ON transactions.category_id = categories.id
 ORDER BY transactions.updated_at DESC;
+
+deleteTransactions:
+DELETE FROM transactions
+WHERE id = :id;
 
 clearAllTransactions:
 DELETE FROM transactions;

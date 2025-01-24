@@ -32,4 +32,8 @@ interface TransactionRepo {
         dateMillis: Long,
         transactionType: TransactionType
     ): Flow<List<TransactionSummaryEntity>>
+
+    suspend fun removeTransaction(id: Long)
+
+    suspend fun updateTransaction(transaction: TransactionEntity)
 }

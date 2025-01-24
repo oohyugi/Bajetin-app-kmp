@@ -2,6 +2,7 @@ package com.bajetin.app.data.local
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import com.bajetin.app.core.utils.DateTimeUtils
 import com.bajetin.app.core.utils.TimePeriod
 import com.bajetin.app.core.utils.calculateTimeRange
 import com.bajetin.app.data.entity.TransactionCategoryEntity
@@ -46,6 +47,9 @@ interface TransactionLocalSource {
         currentDateInMillis: Long,
         transactionType: TransactionType,
     ): Flow<List<TransactionSummaryEntity>>
+
+    suspend fun removeTransaction(id: Long)
+    suspend fun updateTransaction(transaction: TransactionEntity)
 }
 
 class TransactionLocalSourceImpl(
@@ -142,6 +146,24 @@ class TransactionLocalSourceImpl(
             }
     }
 
+    override suspend fun removeTransaction(id: Long) {
+        withContext(ioDispatcher) {
+            queries.deleteTransactions(id)
+        }
+    }
+
+    override suspend fun updateTransaction(transaction: TransactionEntity) {
+        withContext(ioDispatcher) {
+            queries.updateTransaction(
+                id = transaction.id,
+                note = transaction.notes,
+                amount = transaction.amount,
+                categoryId = transaction.category?.id ?: -1,
+                type = transaction.type.name,
+                updatedAt = DateTimeUtils.currentInstant().toEpochMilliseconds()
+            )
+        }
+    }
     private suspend fun insertDefaultCategories() {
         TransactionCategoryEntity.initialCategories.forEach {
             insertCategory(it.label, it.emoticon)
@@ -164,7 +186,8 @@ class TransactionLocalSourceImpl(
             ),
             updatedAt = transactionsWithCategories.updated_at,
             amount = transactionsWithCategories.amount ?: 0,
-            notes = transactionsWithCategories.note
+            notes = transactionsWithCategories.note,
+            type = TransactionType.valueOf(transactionsWithCategories.type)
         )
 
     private fun mapSummaryEntity(

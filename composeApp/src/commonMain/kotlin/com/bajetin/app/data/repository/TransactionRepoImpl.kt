@@ -54,4 +54,12 @@ class TransactionRepoImpl(
         transactionType: TransactionType
     ): Flow<List<TransactionSummaryEntity>> =
         localSource.getSummary(timePeriod, dateMillis, transactionType)
+
+    override suspend fun removeTransaction(id: Long) {
+        localSource.removeTransaction(id)
+    }
+
+    override suspend fun updateTransaction(transaction: TransactionEntity) {
+        localSource.updateTransaction(transaction)
+    }
 }
